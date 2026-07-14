@@ -218,11 +218,11 @@ External contributions, issues, and suggestions are welcome after the public MVP
 
 | Member | Role | Owns |
 |---|---|---|
-| [**Nnamdi Isichei**](https://www.linkedin.com/in/nnamdi-isichei/) | Project Lead / Compliance & Partnerships | Direction, NDPC/NDPR compliance, external relationships, repo administration, verification standards sign-off |
-| [**Solomon Ayuba**](https://www.linkedin.com/in/solomonayuba/) | Product Manager | Backlog & Trello, documentation, minutes & Decision Log, sprint coordination, launch checklist |
-| [**Ojo Ilesanmi**](https://www.linkedin.com/in/ojo-ilesanmi-a64a7a159/) | Data Engineering Lead | Storage architecture, ingestion/ETL design, schema & Data Dictionary, media storage evaluation |
-| [**Aduragbemi Kinoshi**](https://www.linkedin.com/in/aduragbemi-kinoshi-760717395/) | Collection Engineer | Outlet scrapers, robots.txt/ToS audits, collector scheduling |
-| **Favour Success** | Collection / NLP Engineer | Outlet scrapers, security-relevance classifier, NLP extraction pipeline |
+| <a href="https://www.linkedin.com/in/nnamdi-isichei/" target="_blank">**Nnamdi Isichei**</a> | Project Lead / Compliance & Partnerships | Direction, NDPC/NDPR compliance, external relationships, repo administration, verification standards sign-off |
+| <a href="https://www.linkedin.com/in/solomonayuba/" target="_blank">**Solomon Ayuba**</a> | Product Manager | Backlog & Trello, documentation, minutes & Decision Log, sprint coordination, launch checklist |
+| <a href="https://www.linkedin.com/in/ojo-ilesanmi-a64a7a159/" target="_blank">**Ojo Ilesanmi**</a> | Data Engineering Lead | Storage architecture, ingestion/ETL design, schema & Data Dictionary, media storage evaluation |
+| <a href="https://www.linkedin.com/in/aduragbemi-kinoshi-760717395/" target="_blank">**Aduragbemi Kinoshi**</a> | Collection Engineer | Outlet scrapers, robots.txt/ToS audits, collector scheduling |
+| <a href="https://www.linkedin.com/in/" target="_blank">**Favour Success**</a> | Collection / NLP Engineer | Outlet scrapers, security-relevance classifier, NLP extraction pipeline |
 
 ## Project Management
 
