@@ -218,10 +218,10 @@ External contributions, issues, and suggestions are welcome after the public MVP
 
 | Member | Role | Owns |
 |---|---|---|
-| **Nnamdi Isichei** | Project Lead / Compliance & Partnerships | Direction, NDPC/NDPR compliance, external relationships, repo administration, verification standards sign-off |
-| **Solomon Ayuba** | Product Manager | Backlog & Trello, documentation, minutes & Decision Log, sprint coordination, launch checklist |
-| **Ojo Ilesanmi** | Data Engineering Lead | Storage architecture, ingestion/ETL design, schema & Data Dictionary, media storage evaluation |
-| **Aduragbemi Kinoshi** | Collection Engineer | Outlet scrapers, robots.txt/ToS audits, collector scheduling |
+| [**Nnamdi Isichei**](https://www.linkedin.com/in/nnamdi-isichei/) | Project Lead / Compliance & Partnerships | Direction, NDPC/NDPR compliance, external relationships, repo administration, verification standards sign-off |
+| [**Solomon Ayuba**](https://www.linkedin.com/in/solomonayuba/) | Product Manager | Backlog & Trello, documentation, minutes & Decision Log, sprint coordination, launch checklist |
+| [**Ojo Ilesanmi**](https://www.linkedin.com/in/ojo-ilesanmi-a64a7a159/) | Data Engineering Lead | Storage architecture, ingestion/ETL design, schema & Data Dictionary, media storage evaluation |
+| [**Aduragbemi Kinoshi**](https://www.linkedin.com/in/aduragbemi-kinoshi-760717395/) | Collection Engineer | Outlet scrapers, robots.txt/ToS audits, collector scheduling |
 | **Favour Success** | Collection / NLP Engineer | Outlet scrapers, security-relevance classifier, NLP extraction pipeline |
 
 ## Project Management
