@@ -207,10 +207,22 @@ This is a closed team project during the MVP phase. Team workflow:
 1. **Branch-based development**: no direct commits to `main`.
    - Branch naming: `feature/<short-description>`, `fix/<short-description>`, e.g. `feature/vanguard-scraper`.
 2. **Pull requests** for every merge into `main`; at least one review from another team member.
-3. **One owner per outlet/workstream**: see [Team](#team). Owners keep their Trello card linked to their PR.
+3. **One owner per outlet/workstream**: see [Team](#team). Owners keep their Jira issue linked to their PR.
 4. **Check before you scrape**: robots.txt/ToS verification results must be recorded in the Data Source Inventory before a scraper runs against a live site.
 5. **Commit messages**: short imperative summary, e.g. `Add Punch RSS collector with retry logic`.
-6. **Definition of done**: code merged, demoed at the Sunday sprint review, documentation updated, Trello card moved to Done with links attached.
+6. **Definition of done**: code merged, demoed at the Sunday sprint review, documentation updated, Jira issue moved to Done with links attached.
+
+### Board workflow
+
+Work moves through five statuses on the Jira board, mirroring our definition of done:
+
+`To Do` → `In Progress` → `In Review / PR` → `Ready for Demo` → `Done`
+
+- **To Do**: committed for the current sprint, not yet started.
+- **In Progress**: actively being worked on.
+- **In Review / PR**: pull request raised and awaiting review from another team member, or a document awaiting sign-off.
+- **Ready for Demo**: merged and complete, waiting to be shown and accepted at the Sunday sprint review.
+- **Done**: demoed, accepted, and closed with links attached.
 
 External contributions, issues, and suggestions are welcome after the public MVP launch.
 
@@ -219,7 +231,7 @@ External contributions, issues, and suggestions are welcome after the public MVP
 | Member | Role | Owns |
 |---|---|---|
 | <a href="https://www.linkedin.com/in/nnamdi-isichei/" target="_blank">**Nnamdi Isichei**</a> | Project Lead / Compliance & Partnerships | Direction, NDPC/NDPR compliance, external relationships, repo administration, verification standards sign-off |
-| <a href="https://www.linkedin.com/in/solomonayuba/" target="_blank">**Solomon Ayuba**</a> | Product Manager | Backlog & Trello, documentation, minutes & Decision Log, sprint coordination, launch checklist |
+| <a href="https://www.linkedin.com/in/solomonayuba/" target="_blank">**Solomon Ayuba**</a> | Product Manager | Backlog & Jira, documentation, minutes & Decision Log, sprint coordination, launch checklist |
 | <a href="https://www.linkedin.com/in/ojo-ilesanmi-a64a7a159/" target="_blank">**Ojo Ilesanmi**</a> | Data Engineering Lead | Storage architecture, ingestion/ETL design, schema & Data Dictionary, media storage evaluation |
 | <a href="https://www.linkedin.com/in/aduragbemi-kinoshi-760717395/" target="_blank">**Aduragbemi Kinoshi**</a> | Collection Engineer | Outlet scrapers, robots.txt/ToS audits, collector scheduling |
 | <a href="https://www.linkedin.com/in/" target="_blank">**Favour Success**</a> | Collection / NLP Engineer | Outlet scrapers, security-relevance classifier, NLP extraction pipeline |
@@ -227,7 +239,7 @@ External contributions, issues, and suggestions are welcome after the public MVP
 ## Project Management
 
 - **Cadence:** Weekly sprint reviews (Sundays, 21:30 WAT) · async check-ins Wednesdays & Fridays
-- **Task board:** Trello (Kanban), with cards mirroring sprint deliverables
+- **Task board:** Jira (Scrum), four two-week sprints mirroring Blueprint Phases 1 to 4, with issues grouped under epics
 - **Documentation:** Centralised in the team's shared Drive (meeting minutes, Decision Log, Data Source Inventory, Data Dictionary, Implementation Blueprint), access restricted to the team during the MVP phase
 - **Decisions:** Recorded in an append-only Decision Log; reversals supersede rather than overwrite
 
