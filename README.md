@@ -160,13 +160,13 @@ DataWiz-Project/
 ├── scrapers/                  # One module per outlet
 │   ├── vanguard/
 │   ├── punch/
-│   ├── newsagencyofnigeria/
-│   ├── channels/
+│   ├── nan/
+│   ├── channelstv/
 │   ├── dailysun/
 │   ├── guardian/
 │   ├── thisday/
 │   ├── dailytrust/
-│   ├── tvc/
+│   ├── tvcnews/
 │   ├── ait/
 │   ├── icir/
 │   ├── premiumtimes/
