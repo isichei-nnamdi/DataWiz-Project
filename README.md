@@ -114,7 +114,7 @@ Initial collection targets nine approved outlets, selected by media ranking, eac
 |---|---|
 | Ojo Ilesanmi | Vanguard · The Punch · News Agency of Nigeria (NAN) · Channels TV · Daily Sun |
 | Aduragbemi Kinoshi | The Guardian · This Day · Daily Trust · TVC News · AIT · The ICIR |
-| Favour Success | Premium Times · Nigerian Tribune · PRNigeria · HumAngle · NTA |
+| Success Akinnusi | Premium Times · Nigerian Tribune · PRNigeria · HumAngle · NTA |
 
 Official public statements (police, government, emergency agencies) are treated as high-priority sources but still pass through review. Curated Telegram channels and social media come **after** the verification workflow is proven, because they are faster but noisier.
 
@@ -241,7 +241,7 @@ External contributions, issues, and suggestions are welcome after the public MVP
 | <a href="https://www.linkedin.com/in/solomonayuba/" target="_blank">**Solomon Ayuba**</a> | Product Manager | Backlog & Jira, documentation, minutes & Decision Log, sprint coordination, launch checklist |
 | <a href="https://www.linkedin.com/in/ojo-ilesanmi-a64a7a159/" target="_blank">**Ojo Ilesanmi**</a> | Data Engineering Lead | Storage architecture, ingestion/ETL design, schema & Data Dictionary, media storage evaluation |
 | <a href="https://www.linkedin.com/in/aduragbemi-kinoshi-760717395/" target="_blank">**Aduragbemi Kinoshi**</a> | Collection Engineer | Outlet scrapers, robots.txt/ToS audits, collector scheduling |
-| <a href="https://www.linkedin.com/in/" target="_blank">**Favour Success**</a> | Collection / NLP Engineer | Outlet scrapers, security-relevance classifier, NLP extraction pipeline |
+| <a href="https://www.linkedin.com/in/" target="_blank">**Success Akinnusi**</a> | Collection / NLP Engineer | Outlet scrapers, security-relevance classifier, NLP extraction pipeline |
 
 ## Project Management
 
