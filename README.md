@@ -112,9 +112,9 @@ Initial collection targets nine approved outlets, selected by media ranking, eac
 
 | Owner | Outlets |
 |---|---|
-| Ojo Ilesanmi | Vanguard · The Punch · Business Day |
-| Aduragbemi Kinoshi | The Guardian · This Day · Daily Trust |
-| Favour Success | Premium Times · Nigerian Tribune · Nairametrics *(provisional, replacement under review)* |
+| Ojo Ilesanmi | Vanguard · The Punch · News Agency of Nigeria (NAN) · Channels TV · Daily Sun |
+| Aduragbemi Kinoshi | The Guardian · This Day · Daily Trust · TVC News · AIT · The ICIR |
+| Favour Success | Premium Times · Nigerian Tribune · PRNigeria · HumAngle · NTA |
 
 Official public statements (police, government, emergency agencies) are treated as high-priority sources but still pass through review. Curated Telegram channels and social media come **after** the verification workflow is proven, because they are faster but noisier.
 
@@ -160,13 +160,20 @@ DataWiz-Project/
 ├── scrapers/                  # One module per outlet
 │   ├── vanguard/
 │   ├── punch/
-│   ├── businessday/
+│   ├── newsagencyofnigeria/
+│   ├── channels/
+│   ├── dailysun/
 │   ├── guardian/
 │   ├── thisday/
 │   ├── dailytrust/
+│   ├── tvc/
+│   ├── ait/
+│   ├── icir/
 │   ├── premiumtimes/
 │   ├── tribune/
-│   └── nairametrics/
+│   ├── prnigeria/
+│   ├── humangle/
+│   └── nta/
 ├── pipeline/                  # Classification, NLP extraction, deduplication
 ├── db/                        # PostgreSQL schema, migrations, seed data
 ├── review/                    # Admin/reviewer queue application
