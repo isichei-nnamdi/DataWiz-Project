@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<title>Veriscope · Verified security intelligence for Nigeria</title>
+<meta name="description" content="Veriscope is a security incident intelligence platform for Nigeria. Search any location and see incidents that have passed human verification, with clear sources, confidence and honest location precision.">
+<meta property="og:title" content="Veriscope · Verified security intelligence for Nigeria">
+<meta property="og:description" content="Search any location and see verified security incidents, with sources, confidence and honest location precision.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='15' fill='none' stroke='%2348c99a' stroke-width='2.6'/%3E%3Ccircle cx='20' cy='20' r='6.5' fill='none' stroke='%2348c99a' stroke-width='2.6' opacity='.55'/%3E%3Cpath d='M20 3.5v6M20 30.5v6M3.5 20h6M30.5 20h6' stroke='%2348c99a' stroke-width='2.4' stroke-linecap='round'/%3E%3Cpath d='M16.5 20.2l2.6 2.6 4.6-5' fill='none' stroke='%2348c99a' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#48c99a; --brand-dim:#2b6b56; --brand-glow:rgba(72,201,154,.5);
+  --high:#e46a5b; --med:#e2ac57; --low:#6fa6cf;
+  --shadow:0 18px 50px -20px rgba(0,0,0,.75);
+  --r:12px; --r-sm:8px; font-family:'Inter',system-ui,sans-serif;
+}
+:root[data-theme="dark"]{
+  --bg:#0b1119; --bg-2:#0e1622; --panel:#111c29; --panel-2:#152234;
+  --line:rgba(255,255,255,.075); --line-2:rgba(255,255,255,.13);
+  --ink:#e9f0f7; --ink-2:#9db0c2; --ink-3:#6c7f92;
+  --brand-tint:rgba(72,201,154,.1); --brand-bord:rgba(72,201,154,.3);
+  --map-a:#0c141d; --map-b:#080d14;
+  --land-top:#1d2d3c; --land-bot:#131f2a; --land-stroke:rgba(120,160,190,.28);
+  --land-shadow:#0a1119; --grid:rgba(255,255,255,.045);
+  --city-dot:rgba(255,255,255,.32); --city-label:#718493;
+  --glass:rgba(10,16,23,.82); --overlay:rgba(5,9,14,.72);
+  --hero-a:#0c1620; --hero-b:#0b1119;
+}
+:root[data-theme="light"]{
+  --bg:#eef2f7; --bg-2:#ffffff; --panel:#ffffff; --panel-2:#f2f5f9;
+  --line:rgba(18,32,50,.09); --line-2:rgba(18,32,50,.17);
+  --ink:#122031; --ink-2:#48607a; --ink-3:#8496a8;
+  --brand:#0e9d6e; --brand-dim:#cfeee1; --brand-glow:rgba(14,157,110,.35);
+  --brand-tint:rgba(14,157,110,.09); --brand-bord:rgba(14,157,110,.32);
+  --high:#d24f3f; --med:#c2872b; --low:#3f7fb0;
+  --map-a:#e7edf4; --map-b:#dae3ed;
+  --land-top:#ffffff; --land-bot:#e9eff5; --land-stroke:rgba(30,64,98,.24);
+  --land-shadow:rgba(30,64,98,.13); --grid:rgba(20,45,75,.06);
+  --city-dot:rgba(20,45,75,.4); --city-label:#7d8fa1;
+  --glass:rgba(255,255,255,.86); --overlay:rgba(30,45,65,.5);
+  --shadow:0 18px 50px -22px rgba(30,50,80,.35);
+  --hero-a:#eaf1f8; --hero-b:#eef2f7;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100%}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:none}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:4px}
+.screen{display:none;min-height:100%}
+.screen.on{display:flex;flex-direction:column;min-height:100vh}
+
+/* ===== shared brand bits ===== */
+.mark{flex:none}
+.wordmark{font-family:'Space Grotesk';font-weight:700;letter-spacing:-.02em}
+.btn{height:40px;padding:0 18px;border-radius:999px;font-weight:600;font-size:13.5px;display:inline-flex;align-items:center;gap:8px;justify-content:center;border:1px solid transparent;transition:transform .1s,background .15s,border-color .15s}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--brand);color:#04110b}
+:root[data-theme="light"] .btn-primary{color:#fff}
+.btn-primary:hover{filter:brightness(1.06)}
+.btn-ghost{border-color:var(--line-2);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--brand);color:var(--brand)}
+.icon-btn{width:38px;height:38px;border-radius:var(--r-sm);border:1px solid var(--line);color:var(--ink-2);display:grid;place-items:center;flex:none}
+.icon-btn:hover{border-color:var(--line-2);color:var(--ink)}
+.theme-btn .moon{display:none}
+:root[data-theme="light"] .theme-btn .moon{display:block}
+:root[data-theme="light"] .theme-btn .sun{display:none}
+.proto-tag{font-size:10.5px;color:var(--med);border:1px solid rgba(226,172,87,.35);background:rgba(226,172,87,.08);padding:3px 8px;border-radius:999px;font-weight:600;white-space:nowrap}
+
+/* ===== LANDING ===== */
+#screen-landing{background:
+  radial-gradient(1000px 620px at 15% -10%, var(--brand-tint), transparent 60%),
+  radial-gradient(900px 600px at 100% 0%, rgba(111,166,207,.06), transparent 55%),
+  var(--bg)}
+.lnav{display:flex;align-items:center;gap:16px;padding:18px 28px;max-width:1200px;margin:0 auto;width:100%;user-select:none}
+.lnav .brand{display:flex;align-items:center;gap:10px;flex:none;cursor:pointer}
+.lnav .links{display:flex;gap:24px;margin-left:24px}
+.lnav .links a{color:var(--ink-2);font-size:13.5px;text-decoration:none;cursor:pointer}
+.lnav .links a:hover{color:var(--ink)}
+.lnav .spacer{flex:1}
+.lnav .nav-actions{display:flex;align-items:center;gap:10px}
+.hero{max-width:1200px;margin:0 auto;width:100%;padding:40px 28px 30px;display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;flex:1}
+.hero-copy h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,4.4vw,50px);line-height:1.05;letter-spacing:-.025em;margin:0 0 20px}
+.hero-copy p.sub{font-size:16px;color:var(--ink-2);line-height:1.6;max-width:44ch;margin:0 0 28px}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap}
+.hero-meta{display:flex;gap:26px;margin-top:30px;flex-wrap:wrap}
+.hero-meta .m .n{font-family:'Space Grotesk';font-weight:600;font-size:22px;color:var(--brand)}
+.hero-meta .m .l{font-size:12px;color:var(--ink-3);margin-top:3px}
+.hero-visual{position:relative;aspect-ratio:1/1;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:radial-gradient(120% 100% at 50% 0%,var(--hero-a),var(--hero-b));box-shadow:var(--shadow)}
+.hero-visual svg{width:100%;height:100%;display:block}
+.hero-visual .cap{position:absolute;left:16px;bottom:14px;font-size:11px;color:var(--ink-3);background:var(--glass);border:1px solid var(--line);padding:5px 10px;border-radius:8px;backdrop-filter:blur(6px)}
+@keyframes pulse{0%,100%{opacity:.35;r:10}50%{opacity:.06;r:22}}
+.hpin-halo{animation:pulse 3.4s ease-in-out infinite}
+
+.section{max-width:1120px;margin:0 auto;width:100%;padding:34px 28px;scroll-margin-top:26px}
+.section h2{font-family:'Space Grotesk';font-weight:600;font-size:24px;letter-spacing:-.02em;margin:0 0 6px}
+.section .lead{color:var(--ink-2);font-size:14.5px;margin:0 0 26px;max-width:60ch}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.step{border:1px solid var(--line);background:var(--panel);border-radius:14px;padding:18px}
+.step .si{width:36px;height:36px;border-radius:10px;background:var(--brand-tint);border:1px solid var(--brand-bord);display:grid;place-items:center;color:var(--brand);margin-bottom:13px}
+.step h3{font-size:14.5px;font-family:'Space Grotesk';font-weight:600;margin:0 0 6px}
+.step p{font-size:12.8px;color:var(--ink-3);line-height:1.55;margin:0}
+.standards{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+.std{display:flex;align-items:center;gap:9px;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:9px 15px;font-size:12.8px;color:var(--ink-2)}
+.std svg{color:var(--brand);flex:none}
+.lfoot{border-top:1px solid var(--line);margin-top:20px}
+.lfoot .inner{max-width:1120px;margin:0 auto;padding:22px 28px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;color:var(--ink-3);font-size:12.5px}
+.cta-band{max-width:1120px;margin:0 auto;width:100%;padding:10px 28px 40px}
+.cta-inner{border:1px solid var(--brand-bord);background:var(--brand-tint);border-radius:18px;padding:30px 32px;display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between}
+.cta-inner h2{margin:0 0 4px;font-family:'Space Grotesk';font-weight:600;font-size:21px}
+.cta-inner p{margin:0;color:var(--ink-2);font-size:13.5px}
+
+/* ===== AUTH ===== */
+#screen-auth{align-items:center;justify-content:center;background:
+  radial-gradient(900px 600px at 50% -10%, var(--brand-tint), transparent 60%),var(--bg);padding:24px}
+.auth-card{width:100%;max-width:400px;border:1px solid var(--line-2);background:var(--panel);border-radius:18px;padding:28px;box-shadow:var(--shadow)}
+.auth-brand{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:6px}
+.auth-card h2{font-family:'Space Grotesk';font-weight:600;font-size:19px;text-align:center;margin:8px 0 4px}
+.auth-card .sub{text-align:center;color:var(--ink-3);font-size:12.5px;margin:0 0 18px}
+.auth-toggle{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;margin-bottom:18px}
+.auth-toggle button{flex:1;padding:9px;font-size:13px;color:var(--ink-2)}
+.auth-toggle button[aria-pressed=true]{background:var(--panel-2);color:var(--ink);font-weight:600}
+.fld{margin-bottom:13px}
+.fld label{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:6px}
+.fld input{width:100%;height:40px;border-radius:var(--r-sm);border:1px solid var(--line-2);background:var(--bg-2);color:var(--ink);padding:0 13px;font-size:13.5px}
+.auth-note{font-size:11.5px;color:var(--ink-3);background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:10px 12px;margin:6px 0 16px;line-height:1.5}
+.auth-note b{color:var(--med)}
+.auth-actions{display:flex;flex-direction:column;gap:9px}
+.auth-alt{text-align:center;margin-top:14px;font-size:12.5px;color:var(--ink-3)}
+.auth-alt a{color:var(--brand);text-decoration:none;cursor:pointer}
+.err{color:var(--high);font-size:12px;margin-top:4px;display:none}
+.err.show{display:block}
+
+/* ===== CONSOLE (map app) ===== */
+#screen-console{display:none}
+#screen-console.on{display:flex;flex-direction:column;height:100vh}
+header.appbar{display:flex;align-items:center;gap:14px;padding:0 16px;height:58px;flex:none;border-bottom:1px solid var(--line);background:var(--bg-2);position:sticky;top:0;z-index:40}
+.appbar .brand{display:flex;align-items:center;gap:10px;flex:none;cursor:pointer}
+.appbar .tagline{color:var(--ink-3);font-size:12px;border-left:1px solid var(--line-2);padding-left:14px;margin-left:2px}
+.search{position:relative;flex:1;max-width:400px;margin:0 auto}
+.search input{width:100%;height:38px;border-radius:999px;border:1px solid var(--line-2);background:var(--bg);color:var(--ink);padding:0 16px 0 40px;font-size:13.5px}
+.search input::placeholder{color:var(--ink-3)}
+.search svg{position:absolute;left:14px;top:11px;color:var(--ink-3)}
+.appbar .actions{display:flex;align-items:center;gap:8px;flex:none}
+.report-btn{height:38px;padding:0 14px;border-radius:999px;background:var(--brand);color:#04110b;font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:7px}
+:root[data-theme="light"] .report-btn{color:#fff}
+.report-btn:hover{filter:brightness(1.06)}
+.user-chip{display:flex;align-items:center;gap:8px;padding:5px 6px 5px 10px;border:1px solid var(--line-2);border-radius:999px;font-size:12.5px;color:var(--ink)}
+.avatar{width:26px;height:26px;border-radius:50%;background:var(--brand-dim);color:var(--brand);display:grid;place-items:center;font-family:'Space Grotesk';font-weight:600;font-size:12px;flex:none}
+:root[data-theme="dark"] .avatar{color:#d9fff0}
+.menu{position:absolute;top:54px;right:16px;background:var(--panel);border:1px solid var(--line-2);border-radius:12px;box-shadow:var(--shadow);width:210px;padding:6px;z-index:50;display:none}
+.menu.open{display:block}
+.menu .mu-head{padding:9px 10px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.menu .mu-head .nm{font-weight:600;font-size:13px}
+.menu .mu-head .em{font-size:11.5px;color:var(--ink-3)}
+.menu button{width:100%;text-align:left;padding:9px 10px;border-radius:7px;font-size:13px;color:var(--ink-2);display:flex;align-items:center;gap:9px}
+.menu button:hover{background:var(--panel-2);color:var(--ink)}
+
+.shell{flex:1;display:grid;grid-template-columns:296px minmax(0,1fr) 372px;min-height:0}
+.rail,.detail{overflow-y:auto;min-height:0}
+.rail{border-right:1px solid var(--line);padding:18px 16px 40px;background:var(--bg)}
+.stage{position:relative;min-height:0;display:flex;flex-direction:column;background:var(--bg)}
+.detail{border-left:1px solid var(--line);background:var(--bg)}
+.rail h2{font-family:'Space Grotesk';font-weight:600;font-size:12px;letter-spacing:.04em;color:var(--ink-3);margin:0 0 12px}
+.field{margin-bottom:20px}
+.field > label{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:8px;font-weight:500}
+select{width:100%;height:36px;border-radius:var(--r-sm);border:1px solid var(--line-2);background:var(--bg-2);color:var(--ink);padding:0 12px;font-size:13px;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%239db0c2' stroke-width='1.4' fill='none' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 12px center}
+.checks{display:flex;flex-direction:column;gap:2px}
+.check{display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:7px;font-size:13px;color:var(--ink-2);cursor:pointer}
+.check:hover{background:var(--panel)}
+.check input{appearance:none;width:15px;height:15px;border-radius:4px;border:1.5px solid var(--line-2);flex:none;position:relative;cursor:pointer}
+.check input:checked{background:var(--brand-dim);border-color:var(--brand)}
+.check input:checked::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid var(--brand);border-width:0 2px 2px 0;transform:rotate(42deg)}
+.check .sev{width:8px;height:8px;border-radius:50%;flex:none}
+.count{margin-left:auto;color:var(--ink-3);font-size:11.5px;font-variant-numeric:tabular-nums}
+.seg{display:flex;border:1px solid var(--line-2);border-radius:var(--r-sm);overflow:hidden}
+.seg button{flex:1;padding:8px 4px;font-size:12px;color:var(--ink-2);border-right:1px solid var(--line-2)}
+.seg button:last-child{border-right:none}
+.seg button[aria-pressed=true]{background:var(--panel-2);color:var(--ink);box-shadow:inset 0 -2px 0 var(--brand)}
+.conf-row{display:flex;align-items:center;gap:10px}
+input[type=range]{flex:1;accent-color:var(--brand);height:4px}
+.conf-val{font-family:'JetBrains Mono';font-size:12px;color:var(--ink);min-width:38px;text-align:right}
+.reset{width:100%;height:36px;border-radius:var(--r-sm);border:1px solid var(--line-2);color:var(--ink-2);font-size:12.5px}
+.reset:hover{border-color:var(--brand);color:var(--ink)}
+.stat-strip{display:flex;gap:10px;padding:14px 18px 10px;flex-wrap:wrap;flex:none}
+.stat{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:9px 13px;min-width:92px;flex:1}
+.stat .n{font-family:'Space Grotesk';font-weight:600;font-size:20px;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat .l{font-size:11px;color:var(--ink-3);margin-top:5px}
+.stat.brand .n{color:var(--brand)}
+.map-wrap{position:relative;flex:1;min-height:340px;margin:2px 12px 12px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:radial-gradient(120% 100% at 50% 0%,var(--map-a),var(--map-b))}
+#map{width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+#map.grabbing{cursor:grabbing}
+#viewport{transition:transform .18s ease}
+#viewport.notrans{transition:none}
+.marker{cursor:pointer}
+.marker.dim{opacity:.15;pointer-events:none}
+.count-badge{position:absolute;left:14px;top:14px;font-size:12px;color:var(--ink-2);background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:8px;padding:6px 11px;pointer-events:none}
+.count-badge b{color:var(--ink);font-variant-numeric:tabular-nums}
+.zoom-ctrl{position:absolute;right:14px;bottom:14px;display:flex;flex-direction:column;gap:6px}
+.zoom-ctrl button{width:36px;height:36px;border-radius:9px;border:1px solid var(--line-2);background:var(--glass);backdrop-filter:blur(8px);color:var(--ink);display:grid;place-items:center;font-size:17px;line-height:1}
+.zoom-ctrl button:hover{border-color:var(--brand);color:var(--brand)}
+.zoom-ctrl .z-reset{font-size:12px}
+.legend-toggle{position:absolute;left:14px;bottom:14px;display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-2);background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--line-2);border-radius:9px;padding:8px 11px}
+.legend-toggle:hover{color:var(--ink)}
+.legend-pop{position:absolute;left:14px;bottom:56px;background:var(--glass);backdrop-filter:blur(10px);border:1px solid var(--line-2);border-radius:11px;padding:12px 14px;font-size:11.5px;max-width:236px;box-shadow:var(--shadow);display:none}
+.legend-pop.open{display:block}
+.legend-pop .lh{color:var(--ink-2);font-weight:600;margin-bottom:8px;font-size:11px}
+.legend-pop .lh+.lh{margin-top:12px}
+.legend-pop .lrow{display:flex;align-items:center;gap:8px;color:var(--ink-3);margin:5px 0;line-height:1.35}
+.legend-pop .sev{width:9px;height:9px;border-radius:50%;flex:none}
+.legend-pop .halo-key{width:16px;height:16px;border-radius:50%;border:1px solid var(--line-2);background:var(--brand-tint);flex:none}
+.legend-pop .rep-key{width:12px;height:12px;border-radius:50%;border:1.4px dashed var(--med);flex:none}
+.detail-inner{padding:18px 18px 40px}
+.empty{padding:60px 26px;text-align:center;color:var(--ink-3)}
+.empty .ico{width:46px;height:46px;margin:0 auto 16px;opacity:.5}
+.empty h3{color:var(--ink-2);font-family:'Space Grotesk';font-weight:600;font-size:15px;margin:0 0 6px}
+.list-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px}
+.list-head h2{font-family:'Space Grotesk';font-size:13px;font-weight:600;color:var(--ink-2);margin:0}
+.list-head .n{font-size:12px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.inc{width:100%;text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:12px;margin-bottom:9px;display:block;transition:border-color .12s,background .12s}
+.inc:hover{border-color:var(--line-2);background:var(--panel-2)}
+.inc.active{border-color:var(--brand);box-shadow:0 0 0 1px var(--brand-dim),0 0 22px -6px var(--brand-glow)}
+.inc .top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.inc .sev{width:9px;height:9px;border-radius:50%;flex:none}
+.inc .ttl{font-weight:600;font-size:13.5px;line-height:1.35;color:var(--ink)}
+.inc .meta{display:flex;flex-wrap:wrap;gap:6px 10px;font-size:11.5px;color:var(--ink-3);margin-top:2px;align-items:center}
+.vbadge{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:999px}
+.vbadge.v{color:var(--brand);background:var(--brand-tint);border:1px solid var(--brand-bord)}
+.vbadge.r{color:var(--med);background:rgba(226,172,87,.1);border:1px solid rgba(226,172,87,.32)}
+.confbar{display:flex;gap:2px;margin-top:9px}
+.confbar i{height:4px;flex:1;border-radius:2px;background:var(--line-2)}
+.confbar i.on{background:var(--brand)}
+.dtitle{font-family:'Space Grotesk';font-weight:600;font-size:19px;line-height:1.25;letter-spacing:-.01em;margin:14px 0 12px}
+.badge-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center}
+.pill{font-size:11.5px;padding:4px 10px;border-radius:999px;border:1px solid var(--line-2);color:var(--ink-2);display:inline-flex;gap:6px;align-items:center}
+.pill .sev{width:8px;height:8px;border-radius:50%}
+.summary{color:var(--ink-2);font-size:13.5px;line-height:1.62;margin:0 0 18px}
+.dsection{border-top:1px solid var(--line);padding:15px 0}
+.dsection h4{font-family:'Space Grotesk';font-size:11px;font-weight:600;color:var(--ink-3);margin:0 0 11px;letter-spacing:.03em}
+.kv{display:flex;justify-content:space-between;gap:16px;padding:5px 0;font-size:13px}
+.kv .k{color:var(--ink-3)}
+.kv .v{color:var(--ink);text-align:right;font-weight:450}
+.kv .v.mono{font-family:'JetBrains Mono';font-size:12px;color:var(--ink-2)}
+.conf-big{display:flex;align-items:center;gap:12px}
+.conf-big .pct{font-family:'Space Grotesk';font-weight:600;font-size:15px;color:var(--brand);font-variant-numeric:tabular-nums;min-width:42px}
+.confbar.big i{height:6px}
+.precision-viz{display:flex;align-items:center;gap:12px;margin-top:8px}
+.pring{flex:none;border-radius:50%;border:1px dashed var(--line-2);position:relative}
+.pring::after{content:"";position:absolute;inset:0;margin:auto;width:7px;height:7px;border-radius:50%;background:var(--low)}
+.src{display:flex;align-items:center;gap:9px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:7px;font-size:12.5px}
+.src .fav{width:22px;height:22px;border-radius:6px;background:var(--panel-2);display:grid;place-items:center;font-family:'Space Grotesk';font-weight:600;font-size:11px;color:var(--ink-2);flex:none}
+.src .nm{color:var(--ink)}
+.src .tag{margin-left:auto;font-size:10.5px;color:var(--ink-3)}
+.trust{background:var(--brand-tint);border:1px solid var(--brand-bord);border-radius:10px;padding:13px 14px;margin-top:6px}
+.trust h4{color:var(--brand);margin-bottom:9px}
+.trust ul{margin:0;padding:0;list-style:none}
+.trust li{display:flex;gap:9px;font-size:12.5px;color:var(--ink-2);padding:4px 0;line-height:1.45}
+.trust li svg{flex:none;margin-top:2px;color:var(--brand)}
+.ureport-note{background:rgba(226,172,87,.08);border:1px solid rgba(226,172,87,.3);color:var(--med);border-radius:9px;padding:10px 12px;font-size:12px;line-height:1.5;margin-bottom:14px}
+.backBtn{margin-bottom:14px;padding:6px 0;color:var(--ink-3);font-size:12.5px}
+.backBtn:hover{color:var(--ink)}
+
+/* ===== modals + toast ===== */
+.modal-bg{position:fixed;inset:0;background:var(--overlay);backdrop-filter:blur(3px);z-index:70;display:none;align-items:center;justify-content:center;padding:24px}
+.modal-bg.open{display:flex}
+.modal{max-width:520px;width:100%;background:var(--panel);border:1px solid var(--line-2);border-radius:16px;padding:24px;box-shadow:var(--shadow);max-height:88vh;overflow-y:auto}
+.modal h3{font-family:'Space Grotesk';font-weight:600;font-size:18px;margin:0 0 6px;display:flex;align-items:center;gap:10px;justify-content:space-between}
+.modal .x{color:var(--ink-3);font-size:20px;line-height:1}
+.modal p{color:var(--ink-2);font-size:13.5px;line-height:1.6;margin:0 0 12px}
+.modal .close{margin-top:8px;height:40px;padding:0 20px;border-radius:var(--r-sm);background:var(--brand-dim);border:1px solid var(--brand);color:var(--ink);font-weight:600}
+:root[data-theme="dark"] .modal .close{color:#eafff7}
+.modal strong{color:var(--ink)}
+.frow{display:flex;gap:12px}
+.frow .fld{flex:1}
+.fld textarea{width:100%;min-height:80px;border-radius:var(--r-sm);border:1px solid var(--line-2);background:var(--bg-2);color:var(--ink);padding:10px 13px;font:inherit;font-size:13.5px;resize:vertical}
+.fld select{background-color:var(--bg-2)}
+.ack{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;color:var(--ink-2);margin:6px 0 4px;cursor:pointer}
+.ack input{margin-top:2px;accent-color:var(--brand)}
+.dropzone{border:1.5px dashed var(--line-2);border-radius:10px;padding:15px;text-align:center;color:var(--ink-3);font-size:12.5px;cursor:pointer;transition:border-color .15s,background .15s}
+.dropzone:hover,.dropzone.drag{border-color:var(--brand);color:var(--ink-2);background:var(--brand-tint)}
+.dropzone svg{display:block;margin:0 auto 6px;color:var(--ink-3)}
+.dropzone b{color:var(--brand)}
+.media-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.media-thumb{position:relative;width:72px;height:72px;border-radius:9px;overflow:hidden;border:1px solid var(--line-2);background:var(--panel-2)}
+.media-thumb img,.media-thumb video{width:100%;height:100%;object-fit:cover;display:block}
+.media-thumb .rm{position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.62);color:#fff;font-size:13px;line-height:1;display:grid;place-items:center}
+.media-thumb .vtag{position:absolute;left:4px;bottom:4px;background:rgba(0,0,0,.62);color:#fff;font-size:8.5px;padding:2px 5px;border-radius:5px;letter-spacing:.02em}
+.ev-note{font-size:11px;color:var(--ink-3);margin-top:8px;line-height:1.5}
+.evidence{display:flex;flex-direction:column;gap:8px}
+.evidence .ev-item{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel-2)}
+.evidence img.evimg{width:100%;display:block;cursor:zoom-in;max-height:260px;object-fit:cover}
+.evidence video{width:100%;display:block;max-height:300px;background:#000}
+.ev-poster{position:relative}
+.ev-poster img{width:100%;display:block;max-height:260px;object-fit:cover;opacity:.9}
+.ev-poster .play{position:absolute;inset:0;margin:auto;width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.55);display:grid;place-items:center}
+.ev-cap{font-size:11px;color:var(--ink-3);padding:6px 10px}
+#lightbox .modal{background:transparent;border:none;box-shadow:none;padding:0;max-width:92vw;width:auto}
+#lightbox img{max-width:100%;max-height:84vh;border-radius:10px;display:block}
+.mreport{border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:9px}
+.mreport .t{font-weight:600;font-size:13.5px;margin-bottom:4px}
+.mreport .m{font-size:11.5px;color:var(--ink-3);display:flex;gap:10px;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--panel);border:1px solid var(--brand-bord);border-left:3px solid var(--brand);border-radius:10px;padding:13px 16px;box-shadow:var(--shadow);font-size:13px;z-index:90;opacity:0;transition:.25s;max-width:400px}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast b{color:var(--brand)}
+
+.mobile-tabs{display:none}
+@media(max-width:1160px) and (min-width:1025px){.shell{grid-template-columns:248px minmax(0,1fr) 320px}}
+@media(max-width:1024px){
+  .shell{grid-template-columns:1fr}
+  .rail,.detail{display:none}
+  .rail.show,.detail.show{display:block;position:absolute;inset:58px 0 48px;z-index:30;background:var(--bg);width:100%;max-width:440px;border-right:1px solid var(--line-2)}
+  .detail.show{right:0;left:auto;border-left:1px solid var(--line-2);border-right:none}
+  .mobile-tabs{display:flex;flex:none;height:48px;border-top:1px solid var(--line);background:var(--bg-2);position:sticky;bottom:0;z-index:35}
+  .mobile-tabs button{flex:1;color:var(--ink-3);font-size:12px;font-weight:500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+  .mobile-tabs button.on{color:var(--brand)}
+  .mobile-tabs svg{width:18px;height:18px}
+  .appbar .tagline{display:none}
+  .search{max-width:none}
+  .map-wrap{margin:2px 10px 10px}
+  .hero{grid-template-columns:1fr;padding-top:20px}
+  .hero-visual{max-width:420px}
+  .steps{grid-template-columns:repeat(2,1fr)}
+  .lnav .links{display:none}
+}
+@media(max-width:620px){
+  .appbar{gap:10px;padding:0 12px}
+  .report-btn span{display:none}
+  .report-btn{padding:0 11px}
+  .lnav{padding:16px}
+  .steps{grid-template-columns:1fr}
+  .stat-strip{padding:12px 12px 8px;gap:8px}
+  .stat{min-width:0;padding:8px 10px}.stat .n{font-size:17px}
+  .frow{flex-direction:column;gap:0}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ============ LANDING ============ -->
+<div class="screen" id="screen-landing">
+  <nav class="lnav">
+    <div class="brand"><svg class="mark" width="26" height="26" viewBox="0 0 40 40" fill="none" aria-hidden="true"><circle cx="20" cy="20" r="15" stroke="var(--brand)" stroke-width="2.4"/><circle cx="20" cy="20" r="6.5" stroke="var(--brand)" stroke-width="2.4" opacity=".55"/><path d="M20 3.5v6M20 30.5v6M3.5 20h6M30.5 20h6" stroke="var(--brand)" stroke-width="2.2" stroke-linecap="round"/><path d="M16.5 20.2l2.6 2.6 4.6-5" stroke="var(--brand)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="wordmark" style="font-size:19px">Veriscope</span></div>
+    <div class="links"><a data-nav="app">Live map</a><a data-scroll="how">How it works</a><a data-scroll="standards">Verification</a></div>
+    <div class="spacer"></div>
+    <div class="nav-actions">
+      <button class="icon-btn theme-btn" data-theme-toggle aria-label="Toggle theme"><svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8" stroke-linecap="round"/></svg><svg class="moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 019.5 4a7 7 0 108.5 10.5z" stroke-linejoin="round"/></svg></button>
+      <button class="btn btn-ghost" data-nav="auth" id="landSignin">Sign in</button>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-copy">
+      <span class="proto-tag">Design prototype · sample data</span>
+      <h1 style="margin-top:14px">Verified security intelligence for Nigeria</h1>
+      <p class="sub">Search any location and see security incidents that have passed human verification, with clear sources, confidence levels and honest location precision. No rumours. No false accuracy.</p>
+      <div class="hero-cta">
+        <button class="btn btn-primary" data-nav="app">Explore the map</button>
+        <button class="btn btn-ghost" id="heroReport">Report an incident</button>
+      </div>
+      <div class="hero-meta">
+        <div class="m"><div class="n" id="heroStatV">0</div><div class="l">Verified incidents</div></div>
+        <div class="m"><div class="n">6/6</div><div class="l">Geopolitical zones</div></div>
+        <div class="m"><div class="n">Human</div><div class="l">In the loop, every record</div></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <svg id="heroMap" viewBox="0 0 820 780" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+      <span class="cap">Illustrative map · sample incidents</span>
+    </div>
+  </div>
+
+  <section class="section" id="how">
+    <h2>How a report becomes trusted intelligence</h2>
+    <p class="lead">Automation moves fast, but nothing reaches the public map until a person has checked it. This is what keeps Veriscope an intelligence source rather than a rumour feed.</p>
+    <div class="steps">
+      <div class="step"><div class="si"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h10" stroke-linecap="round"/></svg></div><h3>Collect</h3><p>Reports are gathered continuously from vetted news outlets, official statements and moderated public submissions.</p></div>
+      <div class="step"><div class="si"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h5" stroke-linecap="round"/></svg></div><h3>Extract</h3><p>Natural language processing pulls the event type, date, location, actors and impact from raw text into a structured record.</p></div>
+      <div class="step"><div class="si"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v5c0 4-3 7-7 9-4-2-7-5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>Verify</h3><p>A human reviewer confirms the facts, requires a second source for social claims, and sets the confidence level.</p></div>
+      <div class="step"><div class="si"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 00-8 8c0 5 8 12 8 12s8-7 8-12a8 8 0 00-8-8z"/></svg></div><h3>Publish</h3><p>Only confirmed incidents are mapped, at a location precision that never overstates what the source actually supports.</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="standards">
+    <h2>Trust is the product</h2>
+    <p class="lead">Every published record carries the marks of how it was checked.</p>
+    <div class="standards">
+      <div class="std"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Second source required for social claims</div>
+      <div class="std"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Location precision labelled, never faked</div>
+      <div class="std"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Casualty figures marked reported or confirmed</div>
+      <div class="std"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Sensitive locations generalised to reduce harm</div>
+      <div class="std"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Every change kept in an edit history</div>
+    </div>
+  </section>
+
+  <div class="cta-band">
+    <div class="cta-inner">
+      <div><h2>See something? Report it.</h2><p>Create an account and submit an incident. Your report enters review before it ever appears publicly.</p></div>
+      <button class="btn btn-primary" id="ctaReport">Report an incident</button>
+    </div>
+  </div>
+
+  <footer class="lfoot"><div class="inner">
+    <div class="brand" style="display:flex;align-items:center;gap:8px"><svg class="mark" width="20" height="20" viewBox="0 0 40 40" fill="none" aria-hidden="true"><circle cx="20" cy="20" r="15" stroke="var(--brand)" stroke-width="2.4"/><circle cx="20" cy="20" r="6.5" stroke="var(--brand)" stroke-width="2.4" opacity=".55"/><path d="M20 3.5v6M20 30.5v6M3.5 20h6M30.5 20h6" stroke="var(--brand)" stroke-width="2.2" stroke-linecap="round"/><path d="M16.5 20.2l2.6 2.6 4.6-5" stroke="var(--brand)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="wordmark" style="font-size:15px">Veriscope</span></div>
+    <div>Interactive design prototype. All incidents shown are synthetic and do not represent real events.</div>
+  </div></footer>
+</div>
+
+<!-- ============ AUTH ============ -->
+<div class="screen" id="screen-auth">
+  <div class="auth-card">
+    <div class="auth-brand"><svg class="mark" width="26" height="26" viewBox="0 0 40 40" fill="none" aria-hidden="true"><circle cx="20" cy="20" r="15" stroke="var(--brand)" stroke-width="2.4"/><circle cx="20" cy="20" r="6.5" stroke="var(--brand)" stroke-width="2.4" opacity=".55"/><path d="M20 3.5v6M20 30.5v6M3.5 20h6M30.5 20h6" stroke="var(--brand)" stroke-width="2.2" stroke-linecap="round"/><path d="M16.5 20.2l2.6 2.6 4.6-5" stroke="var(--brand)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="wordmark" style="font-size:20px">Veriscope</span></div>
+    <h2 id="authTitle">Welcome back</h2>
+    <p class="sub">Sign in to report and track incidents</p>
+    <div class="auth-toggle">
+      <button data-mode="signin" aria-pressed="true">Sign in</button>
+      <button data-mode="signup" aria-pressed="false">Create account</button>
+    </div>
+    <div class="fld" id="nameFld" style="display:none"><label for="auName">Full name</label><input id="auName" type="text" placeholder="Your name" autocomplete="name"></div>
+    <div class="fld"><label for="auEmail">Email</label><input id="auEmail" type="email" placeholder="you@example.com" autocomplete="email"></div>
+    <div class="fld"><label for="auPass">Password</label><input id="auPass" type="password" placeholder="Any password works in this demo" autocomplete="current-password"></div>
+    <div class="err" id="auErr"></div>
+    <div class="auth-note"><b>Prototype sign in.</b> This demonstration does not use real authentication and stores no real credentials. Use any email, or continue with the demo account. Your session and reports stay in this browser only.</div>
+    <div class="auth-actions">
+      <button class="btn btn-primary" id="auSubmit" style="width:100%">Continue</button>
+      <button class="btn btn-ghost" id="auDemo" style="width:100%">Use demo account</button>
+    </div>
+    <div class="auth-alt"><a data-nav="app">Continue to the map as a guest</a></div>
+  </div>
+</div>
+
+<!-- ============ CONSOLE ============ -->
+<div class="screen" id="screen-console">
+  <header class="appbar">
+    <div class="brand" data-nav="landing"><svg class="mark" width="26" height="26" viewBox="0 0 40 40" fill="none" aria-hidden="true"><circle cx="20" cy="20" r="15" stroke="var(--brand)" stroke-width="2.4"/><circle cx="20" cy="20" r="6.5" stroke="var(--brand)" stroke-width="2.4" opacity=".55"/><path d="M20 3.5v6M20 30.5v6M3.5 20h6M30.5 20h6" stroke="var(--brand)" stroke-width="2.2" stroke-linecap="round"/><path d="M16.5 20.2l2.6 2.6 4.6-5" stroke="var(--brand)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="wordmark" style="font-size:19px">Veriscope</span><span class="tagline">Verified security intelligence for Nigeria</span></div>
+    <div class="search"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><input id="q" type="search" placeholder="Search a state, town or place" autocomplete="off"></div>
+    <div class="actions">
+      <button class="report-btn" id="reportBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg><span>Report</span></button>
+      <button class="icon-btn theme-btn" data-theme-toggle aria-label="Toggle theme"><svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8" stroke-linecap="round"/></svg><svg class="moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 019.5 4a7 7 0 108.5 10.5z" stroke-linejoin="round"/></svg></button>
+      <button class="icon-btn" id="aboutBtn" aria-label="About"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v5" stroke-linecap="round"/><circle cx="12" cy="7.6" r="1.1" fill="currentColor" stroke="none"/></svg></button>
+      <div id="authArea"></div>
+    </div>
+    <div class="menu" id="userMenu"></div>
+  </header>
+  <div class="shell">
+    <aside class="rail" id="rail">
+      <h2>Refine incidents</h2>
+      <div class="field"><label for="state">State</label><select id="state"><option value="">All states</option></select></div>
+      <div class="field"><label>Verification</label><div class="seg" id="verifSeg"><button data-v="all" aria-pressed="true">All</button><button data-v="verified" aria-pressed="false">Verified</button><button data-v="reported" aria-pressed="false">Reported</button></div></div>
+      <div class="field"><label>Incident type</label><div class="checks" id="typeChecks"></div></div>
+      <div class="field"><label>Severity</label><div class="checks" id="sevChecks"></div></div>
+      <div class="field"><label for="conf">Minimum confidence</label><div class="conf-row"><input id="conf" type="range" min="0" max="95" value="0" step="5"><span class="conf-val" id="confVal">0%</span></div></div>
+      <button class="reset" id="reset">Clear all filters</button>
+    </aside>
+    <section class="stage">
+      <div class="stat-strip" id="stats"></div>
+      <div class="map-wrap">
+        <svg id="map" viewBox="0 0 820 780" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Map of Nigeria showing sample security incidents"><g id="viewport"></g></svg>
+        <div class="count-badge" id="mapCount"></div>
+        <button class="legend-toggle" id="legendToggle" aria-expanded="false"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><path d="M8 7.2v4M8 5h.01" stroke-linecap="round"/></svg>Legend</button>
+        <div class="legend-pop" id="legendPop">
+          <div class="lh">Marker colour · severity</div>
+          <div class="lrow"><span class="sev" style="background:var(--high)"></span>High</div>
+          <div class="lrow"><span class="sev" style="background:var(--med)"></span>Medium</div>
+          <div class="lrow"><span class="sev" style="background:var(--low)"></span>Low</div>
+          <div class="lh">Halo size · location precision</div>
+          <div class="lrow"><span class="halo-key"></span>Wider halo means a less precise location</div>
+          <div class="lh">Marker style · status</div>
+          <div class="lrow"><span class="rep-key"></span>Dashed ring means reported, not yet verified</div>
+        </div>
+        <div class="zoom-ctrl"><button id="zoomIn" aria-label="Zoom in">+</button><button id="zoomOut" aria-label="Zoom out">&minus;</button><button class="z-reset" id="zoomReset" aria-label="Reset view">Fit</button></div>
+      </div>
+    </section>
+    <aside class="detail show" id="detail"><div class="detail-inner" id="detailInner"></div></aside>
+  </div>
+  <div class="mobile-tabs">
+    <button data-tab="rail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M7 12h10M10 18h4" stroke-linecap="round"/></svg>Filters</button>
+    <button data-tab="map" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 4L4 6v14l5-2 6 2 5-2V4l-5 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>Map</button>
+    <button data-tab="detail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h10" stroke-linecap="round"/></svg>Incidents</button>
+  </div>
+</div>
+
+<!-- modals -->
+<div class="modal-bg" id="aboutModal"><div class="modal" role="dialog" aria-modal="true"><h3>About this prototype <button class="x" data-close>&times;</button></h3><div id="amBody"></div><button class="close" data-close>Got it</button></div></div>
+
+<div class="modal-bg" id="reportModal"><div class="modal" role="dialog" aria-modal="true">
+  <h3>Report an incident <button class="x" data-close>&times;</button></h3>
+  <p style="margin-bottom:16px">Submit what you know. Your report is stored as <strong>reported and pending review</strong>, and a human verifies it before it can appear on the public map.</p>
+  <div class="fld"><label for="rTitle">What happened (title)</label><input id="rTitle" type="text" placeholder="Short description of the incident"></div>
+  <div class="frow"><div class="fld"><label for="rType">Type</label><select id="rType"></select></div><div class="fld"><label for="rSev">Severity</label><select id="rSev"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select></div></div>
+  <div class="frow"><div class="fld"><label for="rState">State</label><select id="rState"></select></div><div class="fld"><label for="rTown">Town or area</label><input id="rTown" type="text" placeholder="e.g. Chikun"></div></div>
+  <div class="frow"><div class="fld"><label for="rDate">Date</label><input id="rDate" type="date"></div><div class="fld"><label for="rPrec">Location precision</label><select id="rPrec"><option value="exact">Exact location</option><option value="landmark">Landmark level</option><option value="town" selected>Town level</option><option value="lga">LGA level</option><option value="state">State level</option></select></div></div>
+  <div class="fld"><label for="rDesc">Details</label><textarea id="rDesc" placeholder="What you saw or heard, and anything that helps a reviewer confirm it"></textarea></div>
+  <div class="fld"><label for="rSrc">Source link (optional)</label><input id="rSrc" type="url" placeholder="https:// a news article or official post"></div>
+  <div class="fld"><label>Photo or video evidence (optional)</label>
+    <div class="dropzone" id="rDrop" tabindex="0" role="button" aria-label="Add a photo or video">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 16V6m0 0l-3.5 3.5M12 6l3.5 3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15v3a2 2 0 002 2h12a2 2 0 002-2v-3" stroke-linecap="round"/></svg>
+      Tap to add a <b>photo</b> or <b>video</b>, or drop files here
+      <input id="rFiles" type="file" accept="image/*,video/*" multiple hidden>
+    </div>
+    <div class="media-grid" id="rMediaGrid"></div>
+    <div class="ev-note">Up to 4 files. In this prototype media stays in your browser; the live product stores it securely in cloud object storage and shows it to reviewers during verification.</div>
+  </div>
+  <label class="ack"><input type="checkbox" id="rAck"><span>I understand this report will be reviewed before it appears publicly, and that I should not submit exact sensitive locations.</span></label>
+  <div class="err" id="rErr"></div>
+  <button class="close" id="rSubmit" style="width:100%;margin-top:12px">Submit for review</button>
+</div></div>
+
+<div class="modal-bg" id="reportsModal"><div class="modal" role="dialog" aria-modal="true"><h3>My reports <button class="x" data-close>&times;</button></h3><div id="reportsBody"></div></div></div>
+
+<div class="modal-bg" id="lightbox"><div class="modal" role="dialog" aria-modal="true"><img id="lightboxImg" alt="Evidence"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const BRAND='Veriscope';
+const TAGLINE='Verified security intelligence for Nigeria';
+const DATA = {"incidents":[{"title":"Highway ambush on Kaduna-Abuja road","type":"Kidnapping","severity":"high","status":"verified","confidence":92,"sources":["Daily Trust","HumAngle","Premium Times"],"state":"Kaduna","lga":"Chikun","town":"Kaduna-Abuja Expressway","precision":"landmark","lat":10.42,"lon":7.47,"date":"2026-08-30","secondSource":true,"summary":"Travellers were reportedly seized along the expressway. Security agencies confirmed a rescue operation was under way.","actor":"Suspected armed group","casualties":"reported","id":"VS-1000","sourceCount":3,"zone":"North West"},{"title":"Village raid in Katsina rural belt","type":"Banditry","severity":"high","status":"verified","confidence":88,"sources":["Daily Trust","PRNigeria"],"state":"Katsina","lga":"Jibia","town":"Jibia LGA","precision":"lga","lat":12.98,"lon":7.23,"date":"2026-08-27","secondSource":true,"summary":"Armed men on motorcycles raided a rural community. Residents fled to neighbouring towns.","actor":"Suspected bandits","casualties":"unknown","id":"VS-1001","sourceCount":2,"zone":"North West"},{"title":"Attack on rural settlement, Zamfara","type":"Banditry","severity":"high","status":"verified","confidence":90,"sources":["HumAngle","Vanguard"],"state":"Zamfara","lga":"Maru","town":"Maru LGA","precision":"lga","lat":12.33,"lon":6.4,"date":"2026-08-19","secondSource":true,"summary":"A settlement was attacked overnight; livestock were reportedly rustled.","actor":"Suspected bandits","casualties":"reported","id":"VS-1002","sourceCount":2,"zone":"North West"},{"title":"Kidnap-for-ransom near Sokoto","type":"Kidnapping","severity":"high","status":"reported","confidence":64,"sources":["PRNigeria"],"state":"Sokoto","lga":"Wamakko","town":"Wamakko","precision":"town","lat":13.03,"lon":5.16,"date":"2026-09-02","secondSource":false,"summary":"Unconfirmed reports of an abduction along a rural road. Awaiting a second independent source.","actor":"Unknown assailants","casualties":"unknown","id":"VS-1003","sourceCount":1,"zone":"North West"},{"title":"Market robbery in Kano metro","type":"Armed robbery","severity":"medium","status":"verified","confidence":81,"sources":["Channels TV","Daily Trust"],"state":"Kano","lga":"Nassarawa","town":"Sabon Gari area","precision":"town","lat":12.01,"lon":8.53,"date":"2026-08-22","secondSource":true,"summary":"A late-night robbery was reported at a commercial area. Police confirmed arrests.","actor":"Armed robbers","casualties":"confirmed","id":"VS-1004","sourceCount":2,"zone":"North West"},{"title":"Clash on Kebbi farmland","type":"Herder-farmer clash","severity":"medium","status":"verified","confidence":76,"sources":["Vanguard","Nigerian Tribune"],"state":"Kebbi","lga":"Bunza","town":"Bunza LGA","precision":"lga","lat":12.08,"lon":4.02,"date":"2026-08-14","secondSource":true,"summary":"A dispute over farmland reportedly turned violent between two groups.","actor":"Community groups","casualties":"reported","id":"VS-1005","sourceCount":2,"zone":"North West"},{"title":"Insurgent attack near Maiduguri outskirts","type":"Insurgency","severity":"high","status":"verified","confidence":94,"sources":["HumAngle","Premium Times","The ICIR"],"state":"Borno","lga":"Konduga","town":"Konduga LGA","precision":"lga","lat":11.65,"lon":13.42,"date":"2026-08-31","secondSource":true,"summary":"An attack on a security post on the city outskirts was repelled, according to official statements.","actor":"Non-state armed group","casualties":"confirmed","id":"VS-1006","sourceCount":3,"zone":"North East"},{"title":"IED incident on Damaturu route","type":"Explosion","severity":"high","status":"verified","confidence":85,"sources":["HumAngle","PRNigeria"],"state":"Yobe","lga":"Damaturu","town":"Maiduguri-Damaturu Road","precision":"landmark","lat":11.83,"lon":12.05,"date":"2026-08-16","secondSource":true,"summary":"An improvised device reportedly detonated along a major route. No casualties confirmed.","actor":"Non-state armed group","casualties":"unknown","id":"VS-1007","sourceCount":2,"zone":"North East"},{"title":"Farm attack in Adamawa south","type":"Banditry","severity":"medium","status":"reported","confidence":58,"sources":["Daily Trust"],"state":"Adamawa","lga":"Numan","town":"Numan","precision":"town","lat":9.46,"lon":12.03,"date":"2026-09-04","secondSource":false,"summary":"Single-source report of an attack on farmers. Not yet independently confirmed.","actor":"Unidentified gunmen","casualties":"unknown","id":"VS-1008","sourceCount":1,"zone":"North East"},{"title":"Cattle-rustling clash, Bauchi","type":"Herder-farmer clash","severity":"medium","status":"verified","confidence":72,"sources":["Vanguard"],"state":"Bauchi","lga":"Toro","town":"Toro LGA","precision":"lga","lat":10.06,"lon":9.07,"date":"2026-08-11","secondSource":true,"summary":"A confrontation over grazing routes reportedly left several injured.","actor":"Community groups","casualties":"reported","id":"VS-1009","sourceCount":1,"zone":"North East"},{"title":"Communal violence in Plateau district","type":"Communal clash","severity":"high","status":"verified","confidence":89,"sources":["Channels TV","Premium Times","HumAngle"],"state":"Plateau","lga":"Bokkos","town":"Bokkos LGA","precision":"lga","lat":9.3,"lon":9.0,"date":"2026-08-25","secondSource":true,"summary":"Renewed communal tensions reportedly led to displacement of residents.","actor":"Community groups","casualties":"reported","id":"VS-1010","sourceCount":3,"zone":"North Central"},{"title":"Farmland attack in Benue valley","type":"Herder-farmer clash","severity":"high","status":"verified","confidence":87,"sources":["Daily Trust","The ICIR"],"state":"Benue","lga":"Guma","town":"Guma LGA","precision":"lga","lat":7.9,"lon":8.6,"date":"2026-08-20","secondSource":true,"summary":"An attack on farming communities was reported; humanitarian agencies responded.","actor":"Suspected armed herders","casualties":"reported","id":"VS-1011","sourceCount":2,"zone":"North Central"},{"title":"Abduction on Abuja-Lokoja road","type":"Kidnapping","severity":"high","status":"verified","confidence":83,"sources":["Vanguard","PRNigeria"],"state":"Kogi","lga":"Lokoja","town":"Abuja-Lokoja Highway","precision":"landmark","lat":7.95,"lon":6.73,"date":"2026-08-28","secondSource":true,"summary":"Motorists were reportedly abducted along the highway. A search operation followed.","actor":"Unknown assailants","casualties":"reported","id":"VS-1012","sourceCount":2,"zone":"North Central"},{"title":"Protest turns tense in Abuja","type":"Civil unrest","severity":"low","status":"verified","confidence":78,"sources":["Channels TV","Premium Times"],"state":"FCT","lga":"Abuja Municipal","town":"Central district","precision":"town","lat":9.06,"lon":7.49,"date":"2026-09-06","secondSource":true,"summary":"A demonstration over economic conditions was dispersed. No injuries confirmed.","actor":"Protesters","casualties":"confirmed","id":"VS-1013","sourceCount":2,"zone":"North Central"},{"title":"Robbery on Minna outskirts","type":"Armed robbery","severity":"medium","status":"verified","confidence":74,"sources":["Daily Trust"],"state":"Niger","lga":"Bosso","town":"Bosso LGA","precision":"lga","lat":9.63,"lon":6.53,"date":"2026-08-13","secondSource":true,"summary":"An armed robbery was reported at a filling station on the city edge.","actor":"Armed robbers","casualties":"unknown","id":"VS-1014","sourceCount":1,"zone":"North Central"},{"title":"Kidnap attempt near Nasarawa border","type":"Kidnapping","severity":"medium","status":"reported","confidence":61,"sources":["PRNigeria"],"state":"Nasarawa","lga":"Karu","town":"Karu","precision":"town","lat":8.98,"lon":7.66,"date":"2026-09-01","secondSource":false,"summary":"Unconfirmed report of an attempted abduction. Awaiting corroboration.","actor":"Unknown assailants","casualties":"unknown","id":"VS-1015","sourceCount":1,"zone":"North Central"},{"title":"Cult clash in Lagos suburb","type":"Cult clash","severity":"high","status":"verified","confidence":82,"sources":["Punch","Channels TV"],"state":"Lagos","lga":"Mushin","town":"Mushin","precision":"town","lat":6.53,"lon":3.35,"date":"2026-08-24","secondSource":true,"summary":"Rival groups reportedly clashed in a densely populated area. Police restored order.","actor":"Rival groups","casualties":"reported","id":"VS-1016","sourceCount":2,"zone":"South West"},{"title":"Robbery on Lagos-Ibadan expressway","type":"Armed robbery","severity":"medium","status":"verified","confidence":79,"sources":["Punch","Vanguard"],"state":"Ogun","lga":"Obafemi Owode","town":"Lagos-Ibadan Expressway","precision":"landmark","lat":6.85,"lon":3.55,"date":"2026-08-18","secondSource":true,"summary":"An armed robbery targeting motorists was reported at night on the expressway.","actor":"Armed robbers","casualties":"unknown","id":"VS-1017","sourceCount":2,"zone":"South West"},{"title":"Campus unrest in Ibadan","type":"Civil unrest","severity":"low","status":"verified","confidence":70,"sources":["Nigerian Tribune","Punch"],"state":"Oyo","lga":"Ibadan North","town":"University area","precision":"town","lat":7.44,"lon":3.9,"date":"2026-09-03","secondSource":true,"summary":"A student demonstration was reported; authorities engaged with organisers.","actor":"Protesters","casualties":"confirmed","id":"VS-1018","sourceCount":2,"zone":"South West"},{"title":"Highway robbery near Akure","type":"Armed robbery","severity":"medium","status":"reported","confidence":57,"sources":["Punch"],"state":"Ondo","lga":"Akure South","town":"Akure","precision":"town","lat":7.25,"lon":5.2,"date":"2026-08-29","secondSource":false,"summary":"Single-source report of a roadside robbery. Second source pending.","actor":"Armed robbers","casualties":"unknown","id":"VS-1019","sourceCount":1,"zone":"South West"},{"title":"Land dispute violence, Osun","type":"Communal clash","severity":"low","status":"verified","confidence":68,"sources":["Nigerian Tribune"],"state":"Osun","lga":"Ife Central","town":"Ife","precision":"town","lat":7.49,"lon":4.56,"date":"2026-08-10","secondSource":true,"summary":"A land dispute reportedly escalated between two communities.","actor":"Community groups","casualties":"reported","id":"VS-1020","sourceCount":1,"zone":"South West"},{"title":"Gun attack on Anambra facility","type":"Insurgency","severity":"high","status":"verified","confidence":86,"sources":["Premium Times","Channels TV","HumAngle"],"state":"Anambra","lga":"Awka South","town":"Awka","precision":"town","lat":6.21,"lon":7.07,"date":"2026-08-26","secondSource":true,"summary":"An attack on a public facility was reported; security forces responded.","actor":"Unidentified gunmen","casualties":"reported","id":"VS-1021","sourceCount":3,"zone":"South East"},{"title":"Sit-at-home enforcement, Enugu","type":"Civil unrest","severity":"medium","status":"verified","confidence":75,"sources":["Premium Times","Vanguard"],"state":"Enugu","lga":"Enugu North","town":"City centre","precision":"town","lat":6.44,"lon":7.5,"date":"2026-08-21","secondSource":true,"summary":"Enforcement of a stay-home order reportedly disrupted commercial activity.","actor":"Non-state actors","casualties":"unknown","id":"VS-1022","sourceCount":2,"zone":"South East"},{"title":"Attack on checkpoint, Imo","type":"Insurgency","severity":"high","status":"verified","confidence":84,"sources":["HumAngle","Premium Times"],"state":"Imo","lga":"Orlu","town":"Orlu LGA","precision":"lga","lat":5.79,"lon":7.03,"date":"2026-08-17","secondSource":true,"summary":"A security checkpoint was reportedly attacked overnight.","actor":"Unidentified gunmen","casualties":"reported","id":"VS-1023","sourceCount":2,"zone":"South East"},{"title":"Robbery in Umuahia","type":"Armed robbery","severity":"low","status":"reported","confidence":60,"sources":["Vanguard"],"state":"Abia","lga":"Umuahia North","town":"Umuahia","precision":"town","lat":5.52,"lon":7.49,"date":"2026-09-05","secondSource":false,"summary":"Unconfirmed report of a commercial robbery. Awaiting a second source.","actor":"Armed robbers","casualties":"unknown","id":"VS-1024","sourceCount":1,"zone":"South East"},{"title":"Waterway piracy near Bonny","type":"Piracy","severity":"high","status":"verified","confidence":80,"sources":["Vanguard","Channels TV"],"state":"Rivers","lga":"Bonny","town":"Bonny waterways","precision":"landmark","lat":4.45,"lon":7.17,"date":"2026-08-23","secondSource":true,"summary":"An attack on a vessel was reported along the waterway; a response was mounted.","actor":"Suspected pirates","casualties":"reported","id":"VS-1025","sourceCount":2,"zone":"South South"},{"title":"Cult violence in Port Harcourt","type":"Cult clash","severity":"high","status":"verified","confidence":83,"sources":["Punch","Premium Times"],"state":"Rivers","lga":"Port Harcourt","town":"Diobu area","precision":"town","lat":4.79,"lon":6.99,"date":"2026-08-15","secondSource":true,"summary":"Rival groups reportedly clashed in the city; several arrests were made.","actor":"Rival groups","casualties":"reported","id":"VS-1026","sourceCount":2,"zone":"South South"},{"title":"Pipeline incident, Delta","type":"Explosion","severity":"medium","status":"verified","confidence":71,"sources":["Vanguard","Nairametrics"],"state":"Delta","lga":"Warri South","town":"Warri","precision":"town","lat":5.52,"lon":5.75,"date":"2026-08-12","secondSource":true,"summary":"An explosion linked to pipeline interference was reported. Damage assessed.","actor":"Unknown actors","casualties":"unknown","id":"VS-1027","sourceCount":2,"zone":"South South"},{"title":"Robbery on East-West road","type":"Armed robbery","severity":"medium","status":"reported","confidence":59,"sources":["Punch"],"state":"Bayelsa","lga":"Yenagoa","town":"East-West Road","precision":"landmark","lat":4.98,"lon":6.3,"date":"2026-09-02","secondSource":false,"summary":"Single-source report of a roadside robbery on the highway.","actor":"Armed robbers","casualties":"unknown","id":"VS-1028","sourceCount":1,"zone":"South South"},{"title":"Communal tension in Edo north","type":"Communal clash","severity":"low","status":"verified","confidence":66,"sources":["Vanguard"],"state":"Edo","lga":"Etsako West","town":"Auchi","precision":"town","lat":7.07,"lon":6.27,"date":"2026-08-09","secondSource":true,"summary":"A dispute reportedly caused tension between neighbouring communities.","actor":"Community groups","casualties":"unknown","id":"VS-1029","sourceCount":1,"zone":"South South"},{"title":"Kidnapping near Calabar route","type":"Kidnapping","severity":"medium","status":"verified","confidence":73,"sources":["Channels TV","PRNigeria"],"state":"Cross River","lga":"Odukpani","town":"Calabar-Itu Road","precision":"landmark","lat":5.1,"lon":8.2,"date":"2026-08-19","secondSource":true,"summary":"An abduction along a major route was reported; police confirmed a search.","actor":"Unknown assailants","casualties":"reported","id":"VS-1030","sourceCount":2,"zone":"South South"}],"country":[[8.500288,4.771983],[7.462108,4.412108],[7.082596,4.464689],[6.698072,4.240594],[5.898173,4.262453],[5.362805,4.887971],[5.033574,5.611802],[4.325607,6.270651],[3.57418,6.2583],[2.691702,6.258817],[2.749063,7.870734],[2.723793,8.506845],[2.912308,9.137608],[3.220352,9.444153],[3.705438,10.06321],[3.60007,10.332186],[3.797112,10.734746],[3.572216,11.327939],[3.61118,11.660167],[3.680634,12.552903],[3.967283,12.956109],[4.107946,13.531216],[4.368344,13.747482],[5.443058,13.865924],[6.445426,13.492768],[6.820442,13.115091],[7.330747,13.098038],[7.804671,13.343527],[9.014933,12.826659],[9.524928,12.851102],[10.114814,13.277252],[10.701032,13.246918],[10.989593,13.387323],[11.527803,13.32898],[12.302071,13.037189],[13.083987,13.596147],[13.318702,13.556356],[13.995353,12.461565],[14.181336,12.483657],[14.577178,12.085361],[14.468192,11.904752],[14.415379,11.572369],[13.57295,10.798566],[13.308676,10.160362],[13.1676,9.640626],[12.955468,9.417772],[12.753672,8.717763],[12.218872,8.305824],[12.063946,7.799808],[11.839309,7.397042],[11.745774,6.981383],[11.058788,6.644427],[10.497375,7.055358],[10.118277,7.03877],[9.522706,6.453482],[9.233163,6.444491],[8.757533,5.479666],[8.500288,4.771983]],"cities":[["Lagos",6.52,3.38],["Abuja",9.06,7.49],["Kano",12.0,8.52],["Port Harcourt",4.82,7.03],["Maiduguri",11.83,13.15],["Kaduna",10.52,7.44],["Ibadan",7.38,3.9],["Enugu",6.44,7.5],["Sokoto",13.06,5.24],["Jos",9.9,8.89],["Benin City",6.34,5.62],["Calabar",4.96,8.33],["Yola",9.2,12.48],["Ilorin",8.5,4.55],["Makurdi",7.73,8.54]]};
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const NS='http://www.w3.org/2000/svg';
+const PREC_R={exact:5,landmark:9,town:15,lga:26,state:40};
+const PREC_LABEL={exact:'Exact location',landmark:'Landmark level',town:'Town level',lga:'LGA level',state:'State level'};
+const gv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const sevColors=()=>({high:gv('--high'),medium:gv('--med'),low:gv('--low')});
+
+const STATE_CENTROID={Abia:[5.45,7.52],Adamawa:[9.33,12.40],"Akwa Ibom":[5.00,7.85],Anambra:[6.22,6.94],Bauchi:[10.78,9.99],Bayelsa:[4.77,6.07],Benue:[7.33,8.75],Borno:[11.88,13.15],"Cross River":[5.87,8.60],Delta:[5.71,5.86],Ebonyi:[6.26,8.09],Edo:[6.63,5.93],Ekiti:[7.72,5.31],Enugu:[6.53,7.44],FCT:[9.07,7.49],Gombe:[10.36,11.19],Imo:[5.57,7.05],Jigawa:[12.23,9.56],Kaduna:[10.37,7.72],Kano:[11.75,8.52],Katsina:[12.38,7.62],Kebbi:[11.49,4.23],Kogi:[7.73,6.69],Kwara:[8.97,4.39],Lagos:[6.52,3.38],Nasarawa:[8.50,8.20],Niger:[9.93,5.60],Ogun:[6.98,3.48],Ondo:[6.91,5.15],Osun:[7.56,4.52],Oyo:[8.16,3.61],Plateau:[9.22,9.52],Rivers:[4.86,6.92],Sokoto:[13.06,5.24],Taraba:[7.87,10.78],Yobe:[12.29,11.44],Zamfara:[12.12,6.22]};
+const STATE_ZONE={Kaduna:"North West",Katsina:"North West",Zamfara:"North West",Sokoto:"North West",Kano:"North West",Kebbi:"North West",Jigawa:"North West",Borno:"North East",Yobe:"North East",Adamawa:"North East",Bauchi:"North East",Gombe:"North East",Taraba:"North East",Plateau:"North Central",Benue:"North Central",Kogi:"North Central",FCT:"North Central",Niger:"North Central",Nasarawa:"North Central",Kwara:"North Central",Lagos:"South West",Ogun:"South West",Oyo:"South West",Ondo:"South West",Osun:"South West",Ekiti:"South West",Anambra:"South East",Enugu:"South East",Imo:"South East",Abia:"South East",Ebonyi:"South East",Rivers:"South South",Delta:"South South",Bayelsa:"South South",Edo:"South South","Cross River":"South South","Akwa Ibom":"South South"};
+const ALL_STATES=Object.keys(STATE_CENTROID).sort();
+
+/* ---- persistence (per browser) ---- */
+function loadReports(){try{return JSON.parse(localStorage.getItem('veriscope-reports')||'[]');}catch(e){return[];}}
+function saveReports(a){try{localStorage.setItem('veriscope-reports',JSON.stringify(a,(k,v)=>k==='_vid'?undefined:v));return true;}catch(e){return false;}}
+let userReports=loadReports();
+const STREETS=['Ahmadu Bello Way','Market Road','Station Road','Lugard Avenue','Ibrahim Taiwo Road','Airport Road','Ring Road','Nnamdi Azikiwe Road','Aminu Kano Crescent','Old Garage Road','Zaria Road','Hospital Road','Constitution Avenue','Bank Road'];
+const LANDMARKS=['Central Motor Park','Main Market','Township Stadium','General Hospital junction','Central Mosque area','Bus Terminal','Post Office roundabout','Old Garage','Grammar School junction','Railway crossing','Ultra-modern Market','Federal Secretariat gate'];
+function hashStr(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))>>>0;return h;}
+DATA.incidents.forEach(d=>{const h=hashStr(d.id);d._street=STREETS[h%STREETS.length];d._landmark=LANDMARKS[Math.floor(h/7)%LANDMARKS.length];});
+let ALL=DATA.incidents.concat(userReports);
+
+/* ---- auth (mock) ---- */
+function loadUser(){try{return JSON.parse(localStorage.getItem('veriscope-user')||'null');}catch(e){return null;}}
+function saveUser(u){try{u?localStorage.setItem('veriscope-user',JSON.stringify(u)):localStorage.removeItem('veriscope-user');}catch(e){}}
+let currentUser=loadUser();
+
+/* ---- projection ---- */
+const B={minLon:2.4,maxLon:14.95,minLat:3.8,maxLat:14.15},VB={w:820,h:780};
+const cosLat=Math.cos((B.minLat+B.maxLat)/2*Math.PI/180);
+const dLon=(B.maxLon-B.minLon)*cosLat,dLat=(B.maxLat-B.minLat);
+const pscale=Math.min(VB.w/dLon,VB.h/dLat)*0.93;
+const ox=(VB.w-dLon*pscale)/2,oy=(VB.h-dLat*pscale)/2;
+function project(lon,lat){return [ox+((lon-B.minLon)*cosLat)*pscale,oy+((B.maxLat-lat))*pscale];}
+function smoothPath(pts){const p=pts.map(c=>project(c[0],c[1])),n=p.length;let d=`M${p[0][0].toFixed(1)},${p[0][1].toFixed(1)}`;for(let i=0;i<n;i++){const p0=p[(i-1+n)%n],p1=p[i],p2=p[(i+1)%n],p3=p[(i+2)%n];d+=`C${(p1[0]+(p2[0]-p0[0])/6).toFixed(1)},${(p1[1]+(p2[1]-p0[1])/6).toFixed(1)} ${(p2[0]-(p3[0]-p1[0])/6).toFixed(1)},${(p2[1]-(p3[1]-p1[1])/6).toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`;}return d+'Z';}
+function el(t,a){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e;}
+const cpath=smoothPath(DATA.country);
+
+/* ---- hero mini map ---- */
+(function heroMap(){
+  const svg=$('#heroMap');if(!svg)return;const C={high:'#e46a5b',medium:'#e2ac57',low:'#6fa6cf'};
+  svg.appendChild(el('path',{d:cpath,fill:'var(--land-shadow)',transform:'translate(3,6)',opacity:.5}));
+  svg.appendChild(el('path',{d:cpath,fill:'url(#hland)',stroke:'var(--land-stroke)','stroke-width':1.2}));
+  const defs=el('defs',{});defs.innerHTML='<linearGradient id="hland" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--land-top)"/><stop offset="1" stop-color="var(--land-bot)"/></linearGradient>';svg.insertBefore(defs,svg.firstChild);
+  const pick=DATA.incidents.filter((_,i)=>i%3===0).slice(0,9);
+  pick.forEach((d,i)=>{const [x,y]=project(d.lon,d.lat),col=C[d.severity];
+    const halo=el('circle',{cx:x,cy:y,r:14,fill:col,opacity:.16,class:'hpin-halo',style:`animation-delay:${i*.35}s`});svg.appendChild(halo);
+    svg.appendChild(el('circle',{cx:x,cy:y,r:4.5,fill:col}));});
+})();
+
+/* ---- console static map ---- */
+const map=$('#map'),viewport=$('#viewport');
+const defs=el('defs',{});
+defs.innerHTML=`<linearGradient id="land" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--land-top)"/><stop offset="1" stop-color="var(--land-bot)"/></linearGradient><filter id="soft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3.2"/></filter><filter id="mglow" x="-160%" y="-160%" width="420%" height="420%"><feGaussianBlur stdDeviation="3"/></filter>`;
+viewport.appendChild(defs);
+const grid=el('g',{});
+for(let lon=4;lon<=14;lon+=2){const[x1,y1]=project(lon,B.maxLat),[x2,y2]=project(lon,B.minLat);grid.appendChild(el('line',{x1,y1,x2,y2,stroke:'var(--grid)','stroke-width':1,'vector-effect':'non-scaling-stroke'}));}
+for(let lat=6;lat<=14;lat+=2){const[x1,y1]=project(B.minLon,lat),[x2,y2]=project(B.maxLon,lat);grid.appendChild(el('line',{x1,y1,x2,y2,stroke:'var(--grid)','stroke-width':1,'vector-effect':'non-scaling-stroke'}));}
+viewport.appendChild(grid);
+viewport.appendChild(el('path',{d:cpath,fill:'var(--land-shadow)',filter:'url(#soft)',transform:'translate(3,6)'}));
+viewport.appendChild(el('path',{d:cpath,fill:'url(#land)',stroke:'var(--land-stroke)','stroke-width':1.2,'vector-effect':'non-scaling-stroke'}));
+viewport.appendChild(el('path',{d:cpath,fill:'none',stroke:'var(--brand)','stroke-width':6,'stroke-opacity':.10,filter:'url(#soft)'}));
+const cityG=el('g',{});viewport.appendChild(cityG);
+const haloG=el('g',{});viewport.appendChild(haloG);
+const markG=el('g',{});viewport.appendChild(markG);
+const labelG=el('g',{});viewport.appendChild(labelG);
+
+/* ---- filters ---- */
+let filters={q:'',state:'',verif:'all',types:new Set(),sevs:new Set(),conf:0};
+let selected=null,currentList=[],mapDrawn=false;
+const prefersReduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+const allTypes=[...new Set(DATA.incidents.map(d=>d.type))].sort();
+const SEVLABEL={high:'High',medium:'Medium',low:'Low'};
+const stateSel=$('#state');
+function buildStateOptions(){const cur=stateSel.value;const present=[...new Set(ALL.map(d=>d.state))].sort();stateSel.innerHTML='<option value="">All states</option>'+present.map(s=>`<option value="${s}">${s}</option>`).join('');stateSel.value=cur;}
+buildStateOptions();
+allTypes.forEach(t=>{const l=document.createElement('label');l.className='check';l.innerHTML=`<input type="checkbox" data-type="${t}"><span>${t}</span><span class="count" data-tcount="${t}"></span>`;$('#typeChecks').appendChild(l);});
+['high','medium','low'].forEach(v=>{const l=document.createElement('label');l.className='check';l.innerHTML=`<input type="checkbox" data-sev="${v}"><span class="sev" style="background:var(--${v==='medium'?'med':v})"></span><span>${SEVLABEL[v]}</span><span class="count" data-scount="${v}"></span>`;$('#sevChecks').appendChild(l);});
+// report selects
+$('#rType').innerHTML=allTypes.map(t=>`<option value="${t}">${t}</option>`).join('');
+$('#rState').innerHTML='<option value="">Select state</option>'+ALL_STATES.map(s=>`<option value="${s}">${s}</option>`).join('');
+
+function matches(d){
+  if(filters.state&&d.state!==filters.state)return false;
+  if(filters.verif!=='all'&&d.status!==filters.verif)return false;
+  if(filters.types.size&&!filters.types.has(d.type))return false;
+  if(filters.sevs.size&&!filters.sevs.has(d.severity))return false;
+  if(d.confidence<filters.conf)return false;
+  if(filters.q){const s=(d.title+' '+d.state+' '+d.lga+' '+d.town+' '+d.type+' '+d.zone).toLowerCase();if(!s.includes(filters.q.toLowerCase()))return false;}
+  return true;
+}
+function confBar(p,big){let on=Math.round(p/10),h=`<div class="confbar${big?' big':''}">`;for(let i=0;i<10;i++)h+=`<i class="${i<on?'on':''}"></i>`;return h+'</div>';}
+function fmtDate(iso){return new Date(iso+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}
+
+function renderScene(list){
+  const k=view.k,rs=1/k,C=sevColors(),brand=gv('--brand'),ids=new Set(list.map(d=>d.id));
+  haloG.innerHTML='';markG.innerHTML='';cityG.innerHTML='';
+  DATA.cities.forEach(([nm,lat,lon])=>{const[x,y]=project(lon,lat);cityG.appendChild(el('circle',{cx:x,cy:y,r:1.6*rs,fill:'var(--city-dot)'}));const t=el('text',{x:x+5*rs,y:y+3*rs,fill:'var(--city-label)','font-size':9.5*rs,'font-family':'Inter'});t.textContent=nm;cityG.appendChild(t);});
+  ALL.forEach(d=>{const[x,y]=project(d.lon,d.lat),on=ids.has(d.id),col=C[d.severity],r=PREC_R[d.precision]||10;
+    haloG.appendChild(el('circle',{cx:x,cy:y,r,fill:col,opacity:on?0.14:0.03}));
+    const g=el('g',{class:'marker'+(on?'':' dim'),tabindex:on?0:-1,role:'button','aria-label':d.title,'data-id':d.id});
+    const rep=d.status==='reported';
+    g.appendChild(el('circle',{cx:x,cy:y,r:12*rs,fill:'transparent'}));
+    if(selected===d.id)g.appendChild(el('circle',{cx:x,cy:y,r:11*rs,fill:'none',stroke:brand,'stroke-width':1.6,'vector-effect':'non-scaling-stroke'}));
+    if(rep){g.appendChild(el('circle',{cx:x,cy:y,r:6.2*rs,fill:'none',stroke:col,'stroke-width':1.5,'stroke-dasharray':'2.6 2.4','vector-effect':'non-scaling-stroke'}));g.appendChild(el('circle',{cx:x,cy:y,r:2*rs,fill:col}));}
+    else{g.appendChild(el('circle',{cx:x,cy:y,r:6.5*rs,fill:col,opacity:.85,filter:'url(#mglow)'}));g.appendChild(el('circle',{cx:x,cy:y,r:3.4*rs,fill:col}));}
+    if(on&&!prefersReduce&&!mapDrawn){g.style.opacity='0';g.animate([{opacity:0},{opacity:1}],{duration:420,delay:Math.random()*450,fill:'backwards',easing:'ease-out'});}
+    markG.appendChild(g);});
+  labelG.innerHTML='';
+  const cl01=v=>Math.max(0,Math.min(1,v));
+  const mkLbl=(x,y,txt,sz,fill,wt,op)=>{const t=el('text',{x,y,'font-size':sz,'font-family':'Inter','font-weight':wt,fill,'paint-order':'stroke',stroke:'var(--land-bot)','stroke-width':3.2*rs,'stroke-linejoin':'round',opacity:op});t.textContent=txt;labelG.appendChild(t);};
+  const stOp=cl01((k-1.4)/0.6);
+  if(stOp>0.02)for(const s in STATE_CENTROID){const c=STATE_CENTROID[s],[sx,sy]=project(c[1],c[0]);mkLbl(sx,sy,s,12*rs,'var(--ink)',600,stOp*0.92);}
+  const t2=cl01((k-2.3)/0.6),t3=cl01((k-3.8)/0.7);
+  if(t2>0.02)ALL.forEach(d=>{if(!ids.has(d.id))return;const[x,y]=project(d.lon,d.lat);mkLbl(x+9*rs,y-3*rs,d.town,10.5*rs,'var(--ink)',600,t2);mkLbl(x+9*rs,y+8*rs,(d.lga&&d.lga!==d.town?d.lga+' · ':'')+d.state,9*rs,'var(--ink-2)',500,t2);if(t3>0.02){if(d._street)mkLbl(x+9*rs,y+19*rs,d._street,9*rs,'var(--ink-2)',500,t3);if(d._landmark)mkLbl(x+9*rs,y+29*rs,'near '+d._landmark,8.5*rs,'var(--ink-3)',450,t3);}});
+  mapDrawn=true;
+}
+function renderStats(list){
+  const zones=new Set(list.map(d=>d.zone)).size,srcs=new Set();list.forEach(d=>d.sources.forEach(s=>srcs.add(s)));
+  const verified=list.filter(d=>d.status==='verified').length;
+  $('#stats').innerHTML=`<div class="stat brand"><div class="n">${verified}</div><div class="l">Verified incidents</div></div><div class="stat"><div class="n">${list.length-verified}</div><div class="l">Reported · pending</div></div><div class="stat"><div class="n">${zones}<span style="color:var(--ink-3);font-size:13px">/6</span></div><div class="l">Zones covered</div></div><div class="stat"><div class="n">${srcs.size}</div><div class="l">Sources cited</div></div>`;
+  $('#mapCount').innerHTML=`<b>${list.length}</b> incidents shown`;
+}
+function renderList(list){
+  const inner=$('#detailInner');
+  if(selected&&list.find(d=>d.id===selected)){renderDetail(ALL.find(d=>d.id===selected));return;}
+  if(selected&&!list.find(d=>d.id===selected))selected=null;
+  if(!list.length){inner.innerHTML=`<div class="empty"><svg class="ico" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M16 16l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><h3>No incidents match</h3><div>Adjust the filters or clear them to see the full sample dataset.</div></div>`;return;}
+  const sorted=[...list].sort((a,b)=>b.date.localeCompare(a.date));
+  let h=`<div class="list-head"><h2>Incidents</h2><span class="n">${list.length} shown</span></div>`;
+  sorted.forEach(d=>{h+=`<button class="inc${selected===d.id?' active':''}" data-id="${d.id}"><div class="top"><span class="sev" style="background:var(--${d.severity==='medium'?'med':d.severity})"></span><span class="ttl">${d.title}</span></div><div class="meta"><span class="vbadge ${d.status==='verified'?'v':'r'}">${d.status==='verified'?'✓ Verified':'○ Reported'}</span><span>${d.type}</span><span>${d.town}, ${d.state}</span><span>${fmtDate(d.date)}</span></div>${confBar(d.confidence)}</button>`;});
+  inner.innerHTML=h;inner.querySelectorAll('.inc').forEach(b=>b.addEventListener('click',()=>select(b.dataset.id)));
+}
+function renderDetail(d){
+  const inner=$('#detailInner'),r=PREC_R[d.precision]*2;
+  const cas=d.casualties==='unknown'?'Not confirmed':d.casualties.charAt(0).toUpperCase()+d.casualties.slice(1);
+  const srcHtml=d.sources.map((s,i)=>`<div class="src"><span class="fav">${s.slice(0,2).toUpperCase()}</span><span class="nm">${s}</span><span class="tag">${i===0?'primary':'corroborating'}</span></div>`).join('');
+  inner.innerHTML=`<button class="backBtn" id="backBtn">‹ Back to all incidents</button>
+    ${d.reportedByUser?'<div class="ureport-note">Community report, submitted through the app. It is pending human verification and is not yet a confirmed incident.</div>':''}
+    <div class="badge-row"><span class="vbadge ${d.status==='verified'?'v':'r'}">${d.status==='verified'?'✓ Verified':'○ Reported · unconfirmed'}</span><span class="pill"><span class="sev" style="background:var(--${d.severity==='medium'?'med':d.severity})"></span>${d.severity.charAt(0).toUpperCase()+d.severity.slice(1)} severity</span></div>
+    <div class="dtitle">${d.title}</div><p class="summary">${d.summary}</p>
+    <div class="dsection"><h4>Confidence</h4><div class="conf-big"><span class="pct">${d.confidence}%</span>${confBar(d.confidence,true)}</div></div>
+    <div class="dsection"><h4>Incident</h4><div class="kv"><span class="k">Category</span><span class="v">${d.type}</span></div><div class="kv"><span class="k">Date</span><span class="v">${fmtDate(d.date)}</span></div><div class="kv"><span class="k">Suspected actor</span><span class="v">${d.actor}</span></div><div class="kv"><span class="k">Casualties</span><span class="v">${cas}</span></div><div class="kv"><span class="k">Reference</span><span class="v mono">${d.id}</span></div></div>
+    <div class="dsection"><h4>Location · ${PREC_LABEL[d.precision]}</h4><div class="kv"><span class="k">State</span><span class="v">${d.state}</span></div><div class="kv"><span class="k">LGA</span><span class="v">${d.lga}</span></div><div class="kv"><span class="k">Area</span><span class="v">${d.town}</span></div>${d._street?`<div class="kv"><span class="k">Street</span><span class="v">${d._street}</span></div>`:''}${d._landmark?`<div class="kv"><span class="k">Nearest landmark</span><span class="v">${d._landmark}</span></div>`:''}<div class="kv"><span class="k">Coordinates</span><span class="v mono">${d.lat.toFixed(3)}, ${d.lon.toFixed(3)}</span></div><div class="precision-viz"><span class="pring" style="width:${r}px;height:${r}px"></span><span style="font-size:12px;color:var(--ink-3);line-height:1.4">Published at ${PREC_LABEL[d.precision].toLowerCase()} to avoid overstating accuracy${d.precision==='lga'||d.precision==='state'?' and to protect a sensitive location':''}.</span></div></div>
+    <div class="dsection"><h4>Sources · ${d.sourceCount} cited</h4>${srcHtml}<div class="kv" style="margin-top:6px"><span class="k">Second-source rule</span><span class="v" style="color:${d.secondSource?'var(--brand)':'var(--med)'}">${d.secondSource?'Met':'Awaiting confirmation'}</span></div></div>
+    ${d.media&&d.media.length?`<div class="dsection"><h4>Attached evidence · ${d.media.length}</h4><div class="evidence">${d.media.map(m=>m.kind==='video'?(m._vid?`<div class="ev-item"><video src="${m._vid}" controls preload="metadata"></video><div class="ev-cap">${m.name||'Video'}${m.size?' · '+m.size:''}</div></div>`:`<div class="ev-item"><div class="ev-poster">${m.url?`<img src="${m.url}" alt="Video frame">`:''}<span class="play"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></div><div class="ev-cap">${m.name||'Video'} · preview frame (clip stored in the cloud in the live product)</div></div>`):`<div class="ev-item"><img class="evimg" src="${m.url}" data-lb="${m.url}" alt="Evidence"></div>`).join('')}</div><div class="ev-cap" style="padding:8px 0 0">Submitted by the reporter. Media is reviewed as part of verification.</div></div>`:''}
+    <div class="dsection" style="border-bottom:none"><div class="trust"><h4>Why you can trust this record</h4><ul><li>${chk()} Reviewed by a human before publication</li><li>${chk()} Location precision labelled, never overstated</li><li>${chk()} Casualty figures marked reported or confirmed</li><li>${chk()} Every change kept in an edit history</li></ul></div></div>`;
+  $('#backBtn').addEventListener('click',()=>{selected=null;update();});
+  inner.querySelectorAll('[data-lb]').forEach(im=>im.addEventListener('click',()=>{$('#lightboxImg').src=im.dataset.lb;openModal('#lightbox');}));
+}
+function chk(){return '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';}
+function matchesExcept(d,skip){
+  if(skip!=='state'&&filters.state&&d.state!==filters.state)return false;
+  if(filters.verif!=='all'&&d.status!==filters.verif)return false;
+  if(skip!=='types'&&filters.types.size&&!filters.types.has(d.type))return false;
+  if(skip!=='sevs'&&filters.sevs.size&&!filters.sevs.has(d.severity))return false;
+  if(d.confidence<filters.conf)return false;
+  if(filters.q){const s=(d.title+' '+d.state+' '+d.lga+' '+d.town+' '+d.type).toLowerCase();if(!s.includes(filters.q.toLowerCase()))return false;}
+  return true;
+}
+function updateCounts(){
+  allTypes.forEach(t=>{const n=ALL.filter(d=>d.type===t&&matchesExcept(d,'types')).length;const e=document.querySelector(`[data-tcount="${t}"]`);if(e)e.textContent=n;});
+  ['high','medium','low'].forEach(v=>{const n=ALL.filter(d=>d.severity===v&&matchesExcept(d,'sevs')).length;const e=document.querySelector(`[data-scount="${v}"]`);if(e)e.textContent=n;});
+}
+function update(){currentList=ALL.filter(matches);renderScene(currentList);renderStats(currentList);renderList(currentList);updateCounts();}
+function select(id){selected=id;renderScene(currentList);renderDetail(ALL.find(d=>d.id===id));if(window.innerWidth<=1024)showTab('detail');}
+
+/* ---- zoom & pan ---- */
+const view={k:1,tx:0,ty:0};
+function clampPan(){const mnX=VB.w*(1-view.k),mnY=VB.h*(1-view.k);view.tx=Math.min(0,Math.max(mnX,view.tx));view.ty=Math.min(0,Math.max(mnY,view.ty));}
+function applyTransform(){clampPan();viewport.setAttribute('transform',`translate(${view.tx.toFixed(2)} ${view.ty.toFixed(2)}) scale(${view.k.toFixed(4)})`);}
+function ptToVB(cx,cy){const ctm=map.getScreenCTM();if(!ctm)return{x:0,y:0};const p=map.createSVGPoint();p.x=cx;p.y=cy;const v=p.matrixTransform(ctm.inverse());return{x:v.x,y:v.y};}
+function zoomAt(cx,cy,f,anim){const c=ptToVB(cx,cy),nk=Math.min(9,Math.max(1,view.k*f));if(nk===view.k)return;view.tx=c.x-(c.x-view.tx)*(nk/view.k);view.ty=c.y-(c.y-view.ty)*(nk/view.k);view.k=nk;viewport.classList.toggle('notrans',!anim);applyTransform();renderScene(currentList);}
+map.addEventListener('wheel',e=>{e.preventDefault();zoomAt(e.clientX,e.clientY,e.deltaY<0?1.18:1/1.18,false);},{passive:false});
+map.addEventListener('dblclick',e=>{e.preventDefault();zoomAt(e.clientX,e.clientY,1.6,true);});
+$('#zoomIn').addEventListener('click',()=>{const r=map.getBoundingClientRect();zoomAt(r.left+r.width/2,r.top+r.height/2,1.5,true);});
+$('#zoomOut').addEventListener('click',()=>{const r=map.getBoundingClientRect();zoomAt(r.left+r.width/2,r.top+r.height/2,1/1.5,true);});
+$('#zoomReset').addEventListener('click',()=>{viewport.classList.remove('notrans');view.k=1;view.tx=0;view.ty=0;applyTransform();renderScene(currentList);});
+const pointers=new Map();let panStart=null,pinchStart=null;
+map.addEventListener('pointerdown',e=>{map.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pointers.size===1){const m=e.target.closest('.marker');panStart={tx:view.tx,ty:view.ty,x:e.clientX,y:e.clientY,moved:false,marker:m&&!m.classList.contains('dim')?m.dataset.id:null};map.classList.add('grabbing');}
+  else if(pointers.size===2){const p=[...pointers.values()];pinchStart={dist:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y),k:view.k,tx:view.tx,ty:view.ty,c:ptToVB((p[0].x+p[1].x)/2,(p[0].y+p[1].y)/2)};panStart=null;}});
+map.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pointers.size===2&&pinchStart){const p=[...pointers.values()],dist=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y),nk=Math.min(9,Math.max(1,pinchStart.k*(dist/pinchStart.dist)));view.k=nk;view.tx=pinchStart.c.x-(pinchStart.c.x-pinchStart.tx)*(nk/pinchStart.k);view.ty=pinchStart.c.y-(pinchStart.c.y-pinchStart.ty)*(nk/pinchStart.k);viewport.classList.add('notrans');applyTransform();renderScene(currentList);return;}
+  if(pointers.size===1&&panStart){const c0=ptToVB(panStart.x,panStart.y),c1=ptToVB(e.clientX,e.clientY);if(Math.abs(e.clientX-panStart.x)+Math.abs(e.clientY-panStart.y)>4)panStart.moved=true;view.tx=panStart.tx+(c1.x-c0.x);view.ty=panStart.ty+(c1.y-c0.y);viewport.classList.add('notrans');applyTransform();}});
+function endPointer(e){if(pointers.has(e.pointerId)){if(pointers.size===1&&panStart&&!panStart.moved&&panStart.marker)select(panStart.marker);pointers.delete(e.pointerId);}if(pointers.size<2)pinchStart=null;if(pointers.size===0){panStart=null;map.classList.remove('grabbing');}}
+map.addEventListener('pointerup',endPointer);map.addEventListener('pointercancel',endPointer);
+map.addEventListener('keydown',e=>{const m=e.target.closest&&e.target.closest('.marker');if(m&&(e.key==='Enter'||e.key===' ')){e.preventDefault();if(!m.classList.contains('dim'))select(m.dataset.id);}});
+
+/* ---- filter controls ---- */
+$('#q').addEventListener('input',e=>{filters.q=e.target.value;update();});
+stateSel.addEventListener('change',e=>{filters.state=e.target.value;update();});
+$('#conf').addEventListener('input',e=>{filters.conf=+e.target.value;$('#confVal').textContent=e.target.value+'%';update();});
+$('#verifSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;filters.verif=b.dataset.v;[...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',x===b));update();});
+$('#typeChecks').addEventListener('change',e=>{const t=e.target.dataset.type;if(e.target.checked)filters.types.add(t);else filters.types.delete(t);update();});
+$('#sevChecks').addEventListener('change',e=>{const v=e.target.dataset.sev;if(e.target.checked)filters.sevs.add(v);else filters.sevs.delete(v);update();});
+$('#reset').addEventListener('click',()=>{filters={q:'',state:'',verif:'all',types:new Set(),sevs:new Set(),conf:0};selected=null;$('#q').value='';stateSel.value='';$('#conf').value=0;$('#confVal').textContent='0%';$$('#typeChecks input,#sevChecks input').forEach(c=>c.checked=false);[...$('#verifSeg').children].forEach(x=>x.setAttribute('aria-pressed',x.dataset.v==='all'));update();});
+$('#legendToggle').addEventListener('click',()=>{const o=$('#legendPop').classList.toggle('open');$('#legendToggle').setAttribute('aria-expanded',o);});
+
+/* ---- modals ---- */
+function openModal(id){$(id).classList.add('open');}
+function closeModal(id){$(id).classList.remove('open');}
+$$('[data-close]').forEach(b=>b.addEventListener('click',e=>e.target.closest('.modal-bg').classList.remove('open')));
+$$('.modal-bg').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
+$('#aboutBtn').addEventListener('click',()=>openModal('#aboutModal'));
+$('#amBody').innerHTML='<p>This is an <strong>interactive product design prototype</strong> for '+BRAND+', a security incident intelligence platform for Nigeria. It shows how a user searches a location and sees verified incidents with clear dates, categories, sources, location precision and confidence.</p><p>Every incident here is <strong>synthetic and illustrative</strong>. The sign in, account and reporting flow are a front end demonstration: they do not use real authentication, and your session and reports stay in this browser only. The live product uses true authentication and a shared, human verified database.</p><p>The signature design idea: <strong>location precision is drawn as the halo around each marker</strong>. A wider halo means a less precise location. Pan and zoom to drill into an area.</p><p>As you zoom in, place names appear in layers: state first, then LGA and town, then an illustrative street and nearest landmark around each incident.</p>';
+
+/* ---- theme ---- */
+function setTheme(t){document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('veriscope-theme',t);}catch(e){}renderScene(currentList);}
+$$('[data-theme-toggle]').forEach(b=>b.addEventListener('click',()=>setTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')));
+(function(){let t=null;try{t=localStorage.getItem('veriscope-theme');}catch(e){}if(!t)t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);})();
+
+/* ---- mobile tabs ---- */
+function showTab(t){$('#rail').classList.toggle('show',t==='rail');$('#detail').classList.toggle('show',t==='detail');$$('.mobile-tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));}
+$$('.mobile-tabs button').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
+
+/* ---- auth screen ---- */
+let authMode='signin';
+function setAuthMode(m){authMode=m;$$('.auth-toggle button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===m));$('#nameFld').style.display=m==='signup'?'block':'none';$('#authTitle').textContent=m==='signup'?'Create your account':'Welcome back';$('#auErr').classList.remove('show');}
+$$('.auth-toggle button').forEach(b=>b.addEventListener('click',()=>setAuthMode(b.dataset.mode)));
+function doAuth(user){currentUser=user;saveUser(user);renderAuthArea();closeModal('#reportModal');route('app');if(pendingReport){pendingReport=false;setTimeout(openReport,150);}}
+$('#auSubmit').addEventListener('click',()=>{
+  const email=$('#auEmail').value.trim(),name=$('#auName').value.trim();
+  if(!email||!/.+@.+\..+/.test(email)){$('#auErr').textContent='Enter a valid email address.';$('#auErr').classList.add('show');return;}
+  if(authMode==='signup'&&!name){$('#auErr').textContent='Enter your name.';$('#auErr').classList.add('show');return;}
+  doAuth({name:name||email.split('@')[0],email});
+});
+$('#auDemo').addEventListener('click',()=>doAuth({name:'Demo Reviewer',email:'demo@veriscope.ng'}));
+
+/* ---- auth area in appbar ---- */
+function initials(n){return n.split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();}
+function renderAuthArea(){
+  const a=$('#authArea');
+  if(currentUser){a.innerHTML=`<button class="user-chip" id="userChipBtn"><span class="avatar">${initials(currentUser.name)}</span><span>${currentUser.name.split(' ')[0]}</span></button>`;
+    $('#userChipBtn').addEventListener('click',()=>{const m=$('#userMenu');m.classList.toggle('open');});
+    $('#userMenu').innerHTML=`<div class="mu-head"><div class="nm">${currentUser.name}</div><div class="em">${currentUser.email}</div></div><button id="miReports">My reports</button><button id="miReport">Report an incident</button><button id="miOut">Sign out</button>`;
+    $('#miReports').addEventListener('click',()=>{$('#userMenu').classList.remove('open');openMyReports();});
+    $('#miReport').addEventListener('click',()=>{$('#userMenu').classList.remove('open');openReport();});
+    $('#miOut').addEventListener('click',()=>{$('#userMenu').classList.remove('open');currentUser=null;saveUser(null);renderAuthArea();toast('Signed out.');});
+  }else{a.innerHTML=`<button class="btn btn-ghost" data-nav="auth" style="height:38px">Sign in</button>`;a.querySelector('[data-nav]').addEventListener('click',()=>route('auth'));}
+}
+document.addEventListener('click',e=>{const m=$('#userMenu');if(m.classList.contains('open')&&!e.target.closest('#userMenu')&&!e.target.closest('#userChipBtn'))m.classList.remove('open');});
+
+/* ---- report flow ---- */
+let pendingReport=false;
+function openReport(){if(!currentUser){pendingReport=true;route('auth');toast('Sign in to report an incident.');return;}reportMedia.forEach(m=>{try{URL.revokeObjectURL(m.thumbUrl);}catch(e){}});reportMedia=[];renderMediaPreviews();$('#rDate').value=new Date().toISOString().slice(0,10);openModal('#reportModal');}
+$('#reportBtn').addEventListener('click',openReport);
+let reportMedia=[];const MEDIA_MAX=4;
+function fmtSize(b){return b>1048576?(b/1048576).toFixed(1)+' MB':Math.round(b/1024)+' KB';}
+function compressImage(file,maxDim,q){maxDim=maxDim||1024;q=q||0.72;return new Promise(res=>{const img=new Image(),u=URL.createObjectURL(file);img.onload=()=>{let w=img.width,h=img.height;if(w>h&&w>maxDim){h=h*maxDim/w;w=maxDim;}else if(h>maxDim){w=w*maxDim/h;h=maxDim;}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(u);try{res(c.toDataURL('image/jpeg',q));}catch(e){res(null);}};img.onerror=()=>{URL.revokeObjectURL(u);res(null);};img.src=u;});}
+function capturePoster(file){return new Promise(res=>{const v=document.createElement('video');v.muted=true;v.playsInline=true;const u=URL.createObjectURL(file);v.onloadeddata=()=>{try{v.currentTime=Math.min(0.6,(v.duration||1)/2);}catch(e){}};v.onseeked=()=>{const maxDim=1024;let w=v.videoWidth||640,h=v.videoHeight||360;if(w>h&&w>maxDim){h=h*maxDim/w;w=maxDim;}else if(h>maxDim){w=w*maxDim/h;h=maxDim;}const c=document.createElement('canvas');c.width=w;c.height=h;try{c.getContext('2d').drawImage(v,0,0,w,h);res({poster:c.toDataURL('image/jpeg',0.7),objUrl:u});}catch(e){res({poster:null,objUrl:u});}};v.onerror=()=>res({poster:null,objUrl:u});v.src=u;});}
+function addFiles(files){for(const f of files){if(reportMedia.length>=MEDIA_MAX){toast('You can attach up to '+MEDIA_MAX+' files.');break;}if(!/^(image|video)\//.test(f.type))continue;reportMedia.push({file:f,kind:f.type.startsWith('video')?'video':'image',thumbUrl:URL.createObjectURL(f)});}renderMediaPreviews();}
+function renderMediaPreviews(){const g=$('#rMediaGrid');if(!g)return;g.innerHTML=reportMedia.map((m,i)=>m.kind==='video'?`<div class="media-thumb"><video src="${m.thumbUrl}" muted preload="metadata"></video><span class="vtag">VIDEO</span><button class="rm" data-i="${i}" type="button" aria-label="Remove">&times;</button></div>`:`<div class="media-thumb"><img src="${m.thumbUrl}" alt=""><button class="rm" data-i="${i}" type="button" aria-label="Remove">&times;</button></div>`).join('');g.querySelectorAll('.rm').forEach(b=>b.addEventListener('click',()=>{const i=+b.dataset.i;try{URL.revokeObjectURL(reportMedia[i].thumbUrl);}catch(e){}reportMedia.splice(i,1);renderMediaPreviews();}));}
+(function(){const rDrop=$('#rDrop'),rFiles=$('#rFiles');rDrop.addEventListener('click',()=>rFiles.click());rDrop.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();rFiles.click();}});rFiles.addEventListener('change',e=>{addFiles(e.target.files);rFiles.value='';});['dragover','dragenter'].forEach(ev=>rDrop.addEventListener(ev,e=>{e.preventDefault();rDrop.classList.add('drag');}));['dragleave'].forEach(ev=>rDrop.addEventListener(ev,e=>{e.preventDefault();rDrop.classList.remove('drag');}));rDrop.addEventListener('drop',e=>{e.preventDefault();rDrop.classList.remove('drag');if(e.dataTransfer.files.length)addFiles(e.dataTransfer.files);});})();
+
+$('#rSubmit').addEventListener('click',async()=>{
+  const title=$('#rTitle').value.trim(),type=$('#rType').value,sev=$('#rSev').value,state=$('#rState').value,town=$('#rTown').value.trim(),date=$('#rDate').value,prec=$('#rPrec').value,desc=$('#rDesc').value.trim(),src=$('#rSrc').value.trim(),ack=$('#rAck').checked;
+  const err=$('#rErr');
+  if(!title||!state||!date){err.textContent='Please add at least a title, a state and a date.';err.classList.add('show');return;}
+  if(!ack){err.textContent='Please confirm you understand the report will be reviewed.';err.classList.add('show');return;}
+  err.classList.remove('show');
+  const btn=$('#rSubmit');btn.disabled=true;const label=btn.textContent;if(reportMedia.length)btn.textContent='Processing media...';
+  const media=[];
+  for(const m of reportMedia){if(m.kind==='image'){const url=await compressImage(m.file);if(url)media.push({kind:'image',url,name:m.file.name});}else{const r=await capturePoster(m.file);media.push({kind:'video',url:r.poster,name:m.file.name,size:fmtSize(m.file.size),_vid:r.objUrl});}}
+  btn.disabled=false;btn.textContent=label;
+  const [clat,clon]=STATE_CENTROID[state]||[9.0,7.5];
+  const jit=()=> (Math.random()-0.5)*0.5;
+  let srcName='Community submission';if(src){try{srcName=new URL(src).hostname.replace(/^www\./,'');}catch(e){}}
+  const rec={id:'VS-USR'+Date.now().toString().slice(-6),title,type,severity:sev,status:'reported',confidence:30,sources:[srcName],sourceCount:1,state,lga:town||state,town:town||state,precision:prec,lat:+(clat+jit()).toFixed(3),lon:+(clon+jit()).toFixed(3),date,secondSource:false,summary:desc||'Community submitted report, pending verification.',actor:'Reported by user',casualties:'unknown',zone:STATE_ZONE[state]||'',reportedByUser:true,reporter:currentUser.email,submittedAt:new Date().toISOString(),media};
+  userReports.push(rec);const ok=saveReports(userReports);ALL=DATA.incidents.concat(userReports);buildStateOptions();
+  ['rTitle','rTown','rDesc','rSrc'].forEach(i=>$('#'+i).value='');$('#rAck').checked=false;
+  reportMedia.forEach(m=>{try{URL.revokeObjectURL(m.thumbUrl);}catch(e){}});reportMedia=[];renderMediaPreviews();
+  closeModal('#reportModal');update();selected=rec.id;renderScene(currentList);renderDetail(rec);
+  toast(ok?'<b>Report submitted.</b> It is now pending human verification.':'<b>Report submitted.</b> Kept for this session; media was too large to store in the prototype.');
+});
+
+/* ---- my reports ---- */
+function openMyReports(){
+  const mine=userReports.filter(r=>r.reporter===(currentUser&&currentUser.email));
+  const body=$('#reportsBody');
+  if(!mine.length){body.innerHTML='<p style="color:var(--ink-3)">You have not reported any incidents yet. Use the Report button to submit one.</p>';}
+  else{body.innerHTML=mine.slice().reverse().map(r=>`<div class="mreport"><div class="t">${r.title}</div><div class="m"><span class="vbadge r">○ Pending review</span><span>${r.type}</span><span>${r.town}, ${r.state}</span><span>${fmtDate(r.date)}</span></div></div>`).join('');}
+  openModal('#reportsModal');
+}
+
+/* ---- toast ---- */
+let toastT;function toast(msg){const t=$('#toast');t.innerHTML=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),3400);}
+
+/* ---- landing hooks ---- */
+$('#heroReport').addEventListener('click',()=>{route('app');setTimeout(openReport,60);});
+$('#ctaReport').addEventListener('click',()=>{route('app');setTimeout(openReport,60);});
+$('#heroStatV').textContent=DATA.incidents.filter(d=>d.status==='verified').length;
+
+/* ---- router ---- */
+const SCREENS={landing:'#screen-landing',auth:'#screen-auth',app:'#screen-console'};
+let consoleInit=false;
+function route(name){
+  if(!SCREENS[name])name='landing';
+  Object.values(SCREENS).forEach(s=>$(s).classList.remove('on'));
+  $(SCREENS[name]).classList.add('on');
+  if(location.hash!=='#/'+name)history.replaceState(null,'',name==='landing'?'#/':'#/'+name);
+  if(name==='app'){renderAuthArea();if(!consoleInit){consoleInit=true;applyTransform();update();if(window.innerWidth<=1024)showTab('map');}else{update();}}
+  window.scrollTo(0,0);
+}
+$$('[data-nav]').forEach(b=>b.addEventListener('click',()=>route(b.dataset.nav)));
+$$('[data-scroll]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();const id=a.dataset.scroll,go=()=>{const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});};if(!$('#screen-landing').classList.contains('on')){route('landing');setTimeout(go,70);}else go();}));
+(function(){const lb=document.querySelector('#screen-landing .lnav .brand');if(lb)lb.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));})();
+window.addEventListener('hashchange',()=>{const h=location.hash;if(!h.startsWith('#/'))return;const n=h.slice(2)||'landing';route(SCREENS[n]?n:'landing');});
+// initial
+(function(){const h=location.hash;const n=h.startsWith('#/')?(h.slice(2)||'landing'):'landing';route(SCREENS[n]?n:'landing');})();
+</script>
+</body>
+</html>
