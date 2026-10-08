@@ -1,0 +1,6 @@
+# DataWiz collection / NLP pipeline dependencies
+# Python 3.10+
+feedparser>=6.0.11
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+lxml>=5.0.0

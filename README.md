@@ -114,7 +114,16 @@ Initial collection targets nine approved outlets, selected by media ranking, eac
 |---|---|
 | Ojo Ilesanmi | Vanguard · The Punch · News Agency of Nigeria (NAN) · Channels TV · Daily Sun |
 | Aduragbemi Kinoshi | The Guardian · This Day · Daily Trust · TVC News · AIT · The ICIR |
-| Success Akinnusi | Premium Times · Nigerian Tribune · PRNigeria · HumAngle · NTA |
+| Success Akinnusi | Premium Times · ~~Nigerian Tribune~~ · PRNigeria · HumAngle · NTA |
+
+> ⚠️ **Nigerian Tribune — scraping on hold (compliance).** Its `robots.txt` explicitly
+> disallows scraper/AI crawler bots (ClaudeBot, GPTBot, Amazonbot) and declares an
+> `ai-train=no` content signal. Per our respectful-collection commitment, the Tribune
+> scraper is **disabled** (`enabled=False` in `scrapers/config.py`) pending a team
+> compliance decision. robots.txt/ToS findings for all five outlets are recorded in
+> [`docs/data-source-scraper-ban-check.md`](docs/data-source-scraper-ban-check.md) and the
+> Data Source Inventory. Premium Times, PRNigeria, and HumAngle are cleared and collecting;
+> NTA needs an HTML-fallback collector (no RSS feed).
 
 Official public statements (police, government, emergency agencies) are treated as high-priority sources but still pass through review. Curated Telegram channels and social media come **after** the verification workflow is proven, because they are faster but noisier.
 
@@ -151,30 +160,28 @@ These rules are non-negotiable and are the platform's core differentiator:
 
 ## Repository Structure
 
-> Proposed layout, populated as Sprint 1 progresses.
+> Populated as Sprint 1 progresses. **Collection uses a shared-engine design:** rather
+> than a separate scraper program per outlet (which drifts into divergent output formats),
+> there is one collection engine and one processing pipeline. **Adding an outlet is a
+> config entry, not a new module** — this guarantees every owner's records share the same
+> shape so datasets merge cleanly. See [`docs/SCRAPER_INTEGRATION_GUIDE.md`](docs/SCRAPER_INTEGRATION_GUIDE.md).
 
 ```
 DataWiz-Project/
 ├── README.md
 ├── docs/                      # Architecture notes, data dictionary, ADRs
-├── scrapers/                  # One module per outlet
-│   ├── vanguard/
-│   ├── punch/
-│   ├── nan/
-│   ├── channelstv/
-│   ├── dailysun/
-│   ├── guardian/
-│   ├── thisday/
-│   ├── dailytrust/
-│   ├── tvcnews/
-│   ├── ait/
-│   ├── icir/
-│   ├── premiumtimes/
-│   ├── tribune/
-│   ├── prnigeria/
-│   ├── humangle/
-│   └── nta/
+│   ├── SCRAPER_INTEGRATION_GUIDE.md   # Output contract + how to add an outlet
+│   ├── data-source-scraper-ban-check.md
+│   └── scraper-pipeline-plan.md
+├── scrapers/                  # Shared collection engine (RSS-first, throttled)
+│   ├── config.py              #   per-outlet config (feeds, crawl-delay, robots status)
+│   ├── collector.py           #   feed fetch + full-text extraction
+│   └── run.py                 #   orchestrator: python -m scrapers.run <outlet>
 ├── pipeline/                  # Classification, NLP extraction, deduplication
+│   ├── relevance.py           #   security-keyword filter + suppression
+│   ├── extract.py             #   event/date/location/actors/impact extraction
+│   ├── dedup.py               #   idempotent seen-URL store
+│   └── schema.py              #   the shared output record (v0) + Postgres mapping stub
 ├── db/                        # PostgreSQL schema, migrations, seed data
 ├── review/                    # Admin/reviewer queue application
 ├── web/                       # Public map front-end
@@ -182,6 +189,10 @@ DataWiz-Project/
 ├── .env.example               # Environment variable template (never commit real .env)
 └── requirements.txt           # Python dependencies
 ```
+
+Outlet-specific overrides (e.g. a non-standard content selector) live in a small adapter
+only when an outlet genuinely needs one; most outlets need nothing beyond their `config.py`
+entry.
 
 ## Getting Started
 
@@ -203,9 +214,24 @@ pip install -r requirements.txt
 cp .env.example .env             # then fill in local values
 ```
 
+### Run a collector
+
+```bash
+# From the repo root. Outlet keys: premium_times, prnigeria, humangle, nta.
+python -m scrapers.run premium_times --batch 0700
+
+# --batch is a free-form run label (0700, 1100, am, pm ...) so collection can
+# run several times a day. Output is written to datasets/<outlet>/<date>_<batch>.json
+# (git-ignored) plus a datasets/_low_confidence/ bucket for filtered-out items.
+```
+
+Collection frequency is independent of the **daily** human-review/publish cadence — running
+collectors often just avoids missing articles that roll off RSS feeds between runs.
+
 **Requirements:** Python 3.10+, PostgreSQL 14+ (for schema work from Sprint 3), Git.
 
-**Never commit** credentials, `.env` files, or scraped datasets to this repo. Sample datasets live in the team's shared Drive during Sprints 1 and 2.
+**Never commit** credentials, `.env` files, or scraped datasets to this repo (`datasets/` is
+git-ignored). Sample datasets live in the team's shared Drive during Sprints 1 and 2.
 
 ## Contributing (Team Workflow)
 
