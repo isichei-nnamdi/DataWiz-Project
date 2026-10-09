@@ -104,7 +104,7 @@ One incident can have **many sources**, **many review actions**, and **one confi
 | `reviews` | Human verification decisions with notes and reasons |
 | `edits` | Full change history for accountability |
 
-The full Data Dictionary/Schema is maintained in the project's internal documentation and will be reflected in `db/` migrations as Sprint 1 progresses.
+The Data Dictionary lives in [`docs/DATA_DICTIONARY.md`](docs/DATA_DICTIONARY.md): the implemented collection record (Part A) and the proposed database tables (Part B), with undecided points listed as open decisions. It will be reflected in `db/` migrations once the open decisions are settled.
 
 ## Data Sources
 
@@ -170,6 +170,7 @@ These rules are non-negotiable and are the platform's core differentiator:
 DataWiz-Project/
 ├── README.md
 ├── docs/                      # Architecture notes, data dictionary, ADRs
+│   ├── DATA_DICTIONARY.md             # Collection record + proposed DB tables + open decisions
 │   ├── SCRAPER_INTEGRATION_GUIDE.md   # Output contract + how to add an outlet
 │   ├── data-source-scraper-ban-check.md
 │   └── scraper-pipeline-plan.md
