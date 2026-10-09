@@ -15,6 +15,7 @@ This dictionary has two layers:
 Conventions:
 - **OPEN** marks a decision nobody has made. The dictionary states a recommended default and does not treat it as settled. All open items are collected in [Part D](#part-d-open-decisions).
 - **Known issue** marks a defect in the current implementation that affects what a field means. These are real behaviours of the code today, not future work.
+- In Part A, **Type and expected shape** gives the JSON type first, then the form a valid value takes (a pattern, a literal, an allowed set, or an array's contents). "Always set in a written record" means the collector guarantees it for records in the candidate file, even where the field is nullable in general.
 - Enumerations are defined once, in [Part C](#part-c-enumerations), and referenced by name.
 - The Verification Standards in the README (numbered 1–7) are cited as **Std 1** to **Std 7**.
 
@@ -30,52 +31,52 @@ The only place field names are defined is `pipeline/schema.py::build_record`. An
 
 Written to `datasets/<outlet_key>/<YYYY-MM-DD>_<batch>.json` as a JSON array. One element per article that passed relevance and the geography gate.
 
-| Field | Type | Null? | Meaning | Produced by |
+| Field | Type and expected shape | Null? | Meaning | Produced by |
 |---|---|---|---|---|
-| `schema_version` | string | no | Always `"v0-provisional"`. Bump on any change to this table. | `schema.py` |
-| `article_id` | string, 40 hex chars | no | `sha1(source_url.strip())`. Dedup key and primary identifier of a collected article. | `schema.article_id` |
-| `source` | string | no | Outlet key. One of the values in [Part C: source keys](#c1-source-keys). | `config.py` |
-| `source_url` | string (URL) | no | The article URL exactly as the feed gave it. **Known issue:** not canonicalised, so `?utm_*`, trailing slashes and `http`/`https` variants hash to different ids. |  `collector.fetch_feed` |
-| `fetched_at` | string, ISO-8601 UTC | no | When the record was built, e.g. `2026-10-09T08:14:02.118000+00:00`. | `schema.build_record` |
-| `published_at` | string | **yes** | The outlet's own timestamp, passed through **unparsed** (typically RFC-822, e.g. `Mon, 20 Jul 2026 17:46:54 +0000`). Null if the feed gave none. **Known issue:** not normalised. Parse before storing as a timestamp. | `collector.fetch_feed` |
-| `title` | string | no | Feed title, whitespace-trimmed. | `collector.fetch_feed` |
-| `raw_text` | string | no, non-empty | Cleaned article body: paragraphs joined with `\n`, boilerplate lines removed. A record with empty text is routed to the low-confidence file instead, never written here. **Internal only.** Never publish it (outlet copyright). | `collector.fetch_article_text` |
-| `collection_mode` | string | no | `"rss"` today. `"html_fallback"` is reserved for outlets without a feed (NTA) and is not implemented. | `run.py` |
-| `relevance` | object | no | See [A1.1](#a11-relevance-object). | `relevance.score` |
-| `extraction` | object | no | See [A1.2](#a12-extraction-object). | `extract.extract` |
-| `extraction_confidence` | string | no | Always `"low"` today (hardcoded in `run.py`). Allowed values: `low`, `medium`, `high`. **Known issue:** carries no information until a real extractor sets it. | `run.py` |
-| `review_status` | string | no | Always `"pending"` at creation. | `schema.build_record` |
+| `schema_version` | `string`, the literal `v0-provisional` | no | Always `"v0-provisional"`. Bump on any change to this table. | `schema.py` |
+| `article_id` | `string`, 40 lowercase hex chars: `^[0-9a-f]{40}$` | no | `sha1(source_url.strip())`. Dedup key and primary identifier of a collected article. | `schema.article_id` |
+| `source` | `string`, snake_case outlet key: `^[a-z_]+$` (see C1) | no | Outlet key. One of the values in [Part C: source keys](#c1-source-keys). | `config.py` |
+| `source_url` | `string`, absolute `http(s)://` URL | no | The article URL exactly as the feed gave it. **Known issue:** not canonicalised, so `?utm_*`, trailing slashes and `http`/`https` variants hash to different ids. |  `collector.fetch_feed` |
+| `fetched_at` | `string`, `YYYY-MM-DDTHH:MM:SS[.ffffff]+00:00` (UTC) | no | When the record was built, e.g. `2026-10-09T08:14:02.118000+00:00`. | `schema.build_record` |
+| `published_at` | `string` or `null`; usually RFC-822, `Ddd, DD Mon YYYY HH:MM:SS +0000`; not validated | **yes** | The outlet's own timestamp, passed through **unparsed** (typically RFC-822, e.g. `Mon, 20 Jul 2026 17:46:54 +0000`). Null if the feed gave none. **Known issue:** not normalised. Parse before storing as a timestamp. | `collector.fetch_feed` |
+| `title` | `string`, trimmed; non-empty in practice, not enforced | no | Feed title, whitespace-trimmed. | `collector.fetch_feed` |
+| `raw_text` | `string`, plain text with no HTML, paragraphs separated by a newline character (`\n`), non-empty | no, non-empty | Cleaned article body: paragraphs joined with `\n`, boilerplate lines removed. A record with empty text is routed to the low-confidence file instead, never written here. **Internal only.** Never publish it (outlet copyright). | `collector.fetch_article_text` |
+| `collection_mode` | `string`, one of `rss` / `html_fallback` | no | `"rss"` today. `"html_fallback"` is reserved for outlets without a feed (NTA) and is not implemented. | `run.py` |
+| `relevance` | `object` with exactly the keys `is_candidate`, `matched_keywords`, `corroborating` | no | See [A1.1](#a11-relevance-object). | `relevance.score` |
+| `extraction` | `object` with exactly the keys `event_type`, `event_types_all`, `date`, `location`, `locations_all`, `actors`, `impact` | no | See [A1.2](#a12-extraction-object). | `extract.extract` |
+| `extraction_confidence` | `string`, one of `low` / `medium` / `high` | no | Always `"low"` today (hardcoded in `run.py`). Allowed values: `low`, `medium`, `high`. **Known issue:** carries no information until a real extractor sets it. | `run.py` |
+| `review_status` | `string`, `pending` at creation | no | Always `"pending"` at creation. | `schema.build_record` |
 
 #### A1.1 `relevance` object
 
-| Field | Type | Meaning |
+| Field | Type and expected shape | Meaning |
 |---|---|---|
-| `is_candidate` | boolean | Always `true` in a written record (non-candidates go to the low-confidence file). True when at least one event keyword matched and the article was not suppressed. **Known issue:** a single keyword match is enough, so precision is low (for example "cult" matches *culture* and *cultivate*, "attack" matches *heart attack*). |
-| `matched_keywords` | array of strings | Event keyword **roots** that matched (for example `kidnap`, `gunmen`, `attack`). Roots match with `\b<root>\w*\b`; multi-word roots match literally. |
-| `corroborating` | array of strings | Supporting terms that matched (`troops`, `police`, `casualt`, and so on). Informational only: **not used in the candidate decision.** |
+| `is_candidate` | `boolean`, always `true` in a written record | Always `true` in a written record (non-candidates go to the low-confidence file). True when at least one event keyword matched and the article was not suppressed. **Known issue:** a single keyword match is enough, so precision is low (for example "cult" matches *culture* and *cultivate*, "attack" matches *heart attack*). |
+| `matched_keywords` | `array<string>`, 1 or more lowercase roots; a root may contain a space (`boko haram`) | Event keyword **roots** that matched (for example `kidnap`, `gunmen`, `attack`). Roots match with `\b<root>\w*\b`; multi-word roots match literally. |
+| `corroborating` | `array<string>`, 0 or more lowercase roots | Supporting terms that matched (`troops`, `police`, `casualt`, and so on). Informational only: **not used in the candidate decision.** |
 
 #### A1.2 `extraction` object
 
-| Field | Type | Null? | Meaning |
+| Field | Type and expected shape | Null? | Meaning |
 |---|---|---|---|
-| `event_type` | string | yes | First matching category key in the order of `EVENT_KEYWORDS` (not the most prominent one). One of the 11 values in [C2](#c2-scraper-event-type-keys-provisional). |
-| `event_types_all` | array of strings | no | Every category key that matched, in `EVENT_KEYWORDS` order, de-duplicated. |
-| `date` | string | yes | Currently a copy of `published_at`. **It is the publish date, not the date of the incident.** |
-| `location` | string | yes | First gazetteer entry (state or listed town) found **anywhere in the text**, in gazetteer order, not text order. **Known issue:** may not be the incident site, and `Niger` also matches "Niger Republic". |
-| `locations_all` | array of strings | no | Every gazetteer entry found. **Known issue:** may contain duplicates (for example `Sokoto` twice), because the gazetteer lists it twice. Never empty in a written record, since the geography gate rejects empties. |
-| `actors` | array of strings | no | Matches from a fixed list (`bandits`, `gunmen`, `Boko Haram`, `police`, `troops`, ...). **Known issue:** includes responders (`police`, `troops`, `soldiers`, `vigilantes`) as well as perpetrators, so this is not a perpetrator list (Std 7). |
-| `impact` | string | yes | Casualty phrase as `"<count> <outcome>"`, for example `"12 killed"`, `"30 abducted"`. Victim type is dropped. Outcome words: killed, dead, abducted, kidnapped, injured, wounded, missing, beheaded, shot. **Known issues:** vague words become invented numbers (`dozens` → 24, `scores` → 20); "no one was killed" yields `"1 killed"`. Do not treat as a figure (Std 4). |
+| `event_type` | `string` or `null`; a key from C2; always set in a written record | yes | First matching category key in the order of `EVENT_KEYWORDS` (not the most prominent one). One of the 11 values in [C2](#c2-scraper-event-type-keys-provisional). |
+| `event_types_all` | `array<string>`, 1 or more unique keys from C2 | no | Every category key that matched, in `EVENT_KEYWORDS` order, de-duplicated. |
+| `date` | `string` or `null`, same shape as `published_at` | yes | Currently a copy of `published_at`. **It is the publish date, not the date of the incident.** |
+| `location` | `string` or `null`; one gazetteer name (a state, `Abuja`, `FCT`, or a listed town); always set in a written record | yes | First gazetteer entry (state or listed town) found **anywhere in the text**, in gazetteer order, not text order. **Known issue:** may not be the incident site, and `Niger` also matches "Niger Republic". |
+| `locations_all` | `array<string>`, 1 or more gazetteer names; may repeat | no | Every gazetteer entry found. **Known issue:** may contain duplicates (for example `Sokoto` twice), because the gazetteer lists it twice. Never empty in a written record, since the geography gate rejects empties. |
+| `actors` | `array<string>`, 0 or more names from the fixed actor list (`bandits`, `Boko Haram`, ...) | no | Matches from a fixed list (`bandits`, `gunmen`, `Boko Haram`, `police`, `troops`, ...). **Known issue:** includes responders (`police`, `troops`, `soldiers`, `vigilantes`) as well as perpetrators, so this is not a perpetrator list (Std 7). |
+| `impact` | `string` or `null`: `<count> <outcome>`. `count` is 1 to 4 digits, or `several` / `many`. `outcome` is one of `killed`, `dead`, `abducted`, `kidnapped`, `injured`, `wounded`, `missing`, `beheaded`, `shot` | yes | Casualty phrase as `"<count> <outcome>"`, for example `"12 killed"`, `"30 abducted"`. Victim type is dropped. Only the **first** matching phrase in the text is kept, so a story with several casualty types reports just one (for example "abducted 12 ... two women were killed" yields `2 killed`). Outcome words: killed, dead, abducted, kidnapped, injured, wounded, missing, beheaded, shot. **Known issues:** vague words become invented numbers (`dozens` → 24, `scores` → 20); "no one was killed" yields `"1 killed"`. Do not treat as a figure (Std 4). |
 
 ### A2. Low-confidence record
 
 Written to `datasets/_low_confidence/<outlet_key>_<YYYY-MM-DD>_<batch>.json`. Articles that were seen but not emitted as candidates. They are never silently dropped.
 
-| Field | Type | Meaning |
+| Field | Type and expected shape | Meaning |
 |---|---|---|
-| `title` | string | Feed title. |
-| `url` | string | Article URL. (Note: the candidate record calls this `source_url`.) |
-| `published` | string or null | Raw outlet timestamp. (The candidate record calls this `published_at`.) |
-| `reason` | string | Why it was filed here. One of the patterns below. |
+| `title` | `string`, the feed title | Feed title. |
+| `url` | `string`, absolute `http(s)://` URL | Article URL. (Note: the candidate record calls this `source_url`.) |
+| `published` | `string` or `null`, raw outlet timestamp (same shape as `published_at`) | Raw outlet timestamp. (The candidate record calls this `published_at`.) |
+| `reason` | `string`: one of the seven prefixes below, optionally followed by `: <detail>` | Why it was filed here. One of the patterns below. |
 
 `reason` values (exact prefixes, produced in `run.py`):
 
@@ -93,26 +94,26 @@ Written to `datasets/_low_confidence/<outlet_key>_<YYYY-MM-DD>_<batch>.json`. Ar
 
 `datasets/_seen_urls.csv`. Header row, then one row per article ever processed (kept, filed low-confidence, or failed).
 
-| Column | Type | Meaning |
+| Column | Type and expected shape | Meaning |
 |---|---|---|
-| `article_id` | string | As in A1. |
-| `source_url` | string | The URL that was hashed. |
-| `first_seen` | string, ISO-8601 UTC | When it was first recorded. |
+| `article_id` | `string`, 40 lowercase hex chars: `^[0-9a-f]{40}$` | As in A1. |
+| `source_url` | `string`, absolute URL (CSV-quoted if it contains a comma) | The URL that was hashed. |
+| `first_seen` | `string`, `YYYY-MM-DDTHH:MM:SS[.ffffff]+00:00` (UTC) | When it was first recorded. |
 
 Interim only. Part B replaces this with a unique constraint on `raw_reports.article_id`.
 
 ### A4. Outlet configuration (`OutletConfig`)
 
-| Field | Type | Meaning |
+| Field | Type and expected shape | Meaning |
 |---|---|---|
-| `key` | string | Stable outlet id, used in filenames and records. |
-| `name` | string | Display name. |
-| `base_url` | string | Site root. Also determines the host used for crawl-delay throttling. |
-| `feeds` | array of strings | RSS/Atom feed URLs. Merged and de-duplicated by link within a run. Empty means no feed (NTA). |
-| `robots_status` | string | Free-text summary of the robots.txt finding. Not machine-read. |
-| `crawl_delay` | integer, seconds | Minimum gap between article-page requests to the host. **Not applied to feed requests.** |
-| `category_paths` | array of strings | Section paths reserved for an HTML fallback. Unused today. |
-| `enabled` | boolean | If false, `run.py` refuses to run the outlet. |
+| `key` | `string`, unique snake_case: `^[a-z_]+$` | Stable outlet id, used in filenames and records. |
+| `name` | `string` | Display name. |
+| `base_url` | `string`, absolute `https://` URL with no trailing slash | Site root. Also determines the host used for crawl-delay throttling. |
+| `feeds` | `array<string>` of absolute feed URLs; an empty array means no feed | RSS/Atom feed URLs. Merged and de-duplicated by link within a run. Empty means no feed (NTA). |
+| `robots_status` | `string`, free text | Free-text summary of the robots.txt finding. Not machine-read. |
+| `crawl_delay` | `integer`, seconds, 0 or more (configured values: 5 or 10) | Minimum gap between article-page requests to the host. **Not applied to feed requests.** |
+| `category_paths` | `array<string>`, each starting with `/`; may be empty | Section paths reserved for an HTML fallback. Unused today. |
+| `enabled` | `boolean` | If false, `run.py` refuses to run the outlet. |
 
 ---
 
@@ -484,3 +485,4 @@ Which standard each part of the model supports.
 | Date | Version | Change |
 |---|---|---|
 | 2026-10-09 | v1 draft | First version. Part A checked against the code on `main` at `f22a953`. Part B and the open decisions are proposals. |
+| 2026-10-09 | v1.1 | Part A: the `Type` column is now `Type and expected shape` (JSON type plus the form a valid value takes). Shapes were checked against real output from `relevance`, `extract`, `build_record` and `SeenStore`. Part B is unchanged. `impact` now notes that only the first matching phrase is kept. |
